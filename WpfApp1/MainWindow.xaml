@@ -1,0 +1,76 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="Smart File Organizer" Height="600" Width="1000"
+        Background="#2B2B2B"
+        WindowStartupLocation="CenterScreen"
+        Closed="Window_Closed">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="180"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Sidebar -->
+        <StackPanel Grid.Column="0" Background="#1E1E1E" Margin="10">
+            <TextBlock Text="Smart File Organizer" Foreground="#FF6B35" FontSize="14" FontWeight="Bold" Margin="0,10"/>
+
+            <!-- Status Indicators -->
+            <StackPanel Margin="0,20,0,0">
+                <StackPanel Orientation="Horizontal" Margin="0,5">
+                    <Ellipse Width="12" Height="12" Fill="#00FF00" VerticalAlignment="Center"/>
+                    <TextBlock Text="Database: Connected" Foreground="#00FF00" Margin="8,0,0,0" FontSize="11"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,5">
+                    <Ellipse Width="12" Height="12" Fill="#FFD700" VerticalAlignment="Center"/>
+                    <TextBlock Text="AI Model: Active" Foreground="#FFD700" Margin="8,0,0,0" FontSize="11"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Navigation Buttons -->
+            <Button Content="Rule Management" Background="#FF6B35" Foreground="White" Margin="0,30,0,10" Padding="10" FontWeight="Bold" Height="45"/>
+            <Button Content="File Organization" Background="#FF6B35" Foreground="White" Margin="0,10,0,10" Padding="10" FontWeight="Bold" Height="45"/>
+            <Button Content="Analytics" Background="#FF6B35" Foreground="White" Margin="0,10,0,10" Padding="10" FontWeight="Bold" Height="45"/>
+            <Button Content="Scheduler" Background="#FF6B35" Foreground="White" Margin="0,10,0,10" Padding="10" FontWeight="Bold" Height="45"/>
+            <Button Content="Settings" Background="#FF6B35" Foreground="White" Margin="0,10,0,10" Padding="10" FontWeight="Bold" Height="45"/>
+        </StackPanel>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Column="1" Background="#2B2B2B" Margin="20">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <!-- Header -->
+                <TextBlock Text="Folder Selection (Drop Zone)" Foreground="#FF6B35" FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
+
+                <!-- Drop Zone -->
+                <Border x:Name="DropZone" 
+                        BorderThickness="2" 
+                        BorderBrush="#FF6B35" 
+                        Background="#3B3B3B" 
+                        CornerRadius="10" 
+                        Height="250" 
+                        Width="600"
+                        AllowDrop="True">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <!-- Folder Icon (using text representation) -->
+                        <TextBlock Text="📁" FontSize="60" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Drag &amp; Drop Folder Here" Foreground="White" FontSize="16" HorizontalAlignment="Center" Margin="0,15,0,0"/>
+                        <TextBlock x:Name="FolderPathText" Text="C:\Users\anwar\Downloads" Foreground="#999999" FontSize="12" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                        <Button Content="Browse Folder" Background="#FF6B35" Foreground="White" Padding="15,8" Margin="0,20,0,0" HorizontalAlignment="Center" Width="150" Height="40"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- File Statistics -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                    <TextBlock Text="Total Files: " Foreground="White" FontSize="12"/>
+                    <TextBlock x:Name="TotalFilesText" Text="14" Foreground="#FF6B35" FontSize="12" FontWeight="Bold"/>
+                    <TextBlock Text=" | Size: " Foreground="White" FontSize="12" Margin="20,0,0,0"/>
+                    <TextBlock x:Name="TotalSizeText" Text="101.13 MB" Foreground="#FF6B35" FontSize="12" FontWeight="Bold"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

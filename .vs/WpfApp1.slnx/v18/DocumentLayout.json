@@ -1,0 +1,152 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|c:\\users\\anwar\\downloads\\fileorganizera\\wpfapp1\\wpfapp1\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|solutionrelative:wpfapp1\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|c:\\users\\anwar\\downloads\\fileorganizera\\wpfapp1\\wpfapp1\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|solutionrelative:wpfapp1\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|c:\\users\\anwar\\downloads\\fileorganizera\\wpfapp1\\wpfapp1\\models\\fileorganizationrule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|solutionrelative:wpfapp1\\models\\fileorganizationrule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|c:\\users\\anwar\\downloads\\fileorganizera\\wpfapp1\\wpfapp1\\data\\fileorganizercontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|solutionrelative:wpfapp1\\data\\fileorganizercontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|c:\\users\\anwar\\downloads\\fileorganizera\\wpfapp1\\wpfapp1\\models\\fileorganizationlog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|solutionrelative:wpfapp1\\models\\fileorganizationlog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|c:\\users\\anwar\\downloads\\fileorganizera\\wpfapp1\\wpfapp1\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|solutionrelative:wpfapp1\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|c:\\users\\anwar\\downloads\\fileorganizera\\wpfapp1\\wpfapp1\\wpfapp1.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|solutionrelative:wpfapp1\\wpfapp1.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|c:\\users\\anwar\\downloads\\fileorganizera\\wpfapp1\\wpfapp1\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7605DAD6-FF29-68CC-A841-EC859FB1D9DB}|WpfApp1\\WpfApp1.csproj|solutionrelative:wpfapp1\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": ".gitignore",
+              "DocumentMoniker": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\.gitignore",
+              "RelativeDocumentMoniker": "WpfApp1\\.gitignore",
+              "ToolTip": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\.gitignore",
+              "RelativeToolTip": "WpfApp1\\.gitignore",
+              "ViewState": "AgIAACcAAAAAAAAAAAAqwCsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-05-09T21:53:36.683Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "FileOrganizationRule.cs",
+              "DocumentMoniker": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\Models\\FileOrganizationRule.cs",
+              "RelativeDocumentMoniker": "WpfApp1\\Models\\FileOrganizationRule.cs",
+              "ToolTip": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\Models\\FileOrganizationRule.cs",
+              "RelativeToolTip": "WpfApp1\\Models\\FileOrganizationRule.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T21:49:47.195Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "WpfApp1\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\MainWindow.xaml",
+              "RelativeToolTip": "WpfApp1\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-05-09T21:42:00.26Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "FileOrganizerContext.cs",
+              "DocumentMoniker": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\Data\\FileOrganizerContext.cs",
+              "RelativeDocumentMoniker": "WpfApp1\\Data\\FileOrganizerContext.cs",
+              "ToolTip": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\Data\\FileOrganizerContext.cs",
+              "RelativeToolTip": "WpfApp1\\Data\\FileOrganizerContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T21:49:55.947Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "FileOrganizationLog.cs",
+              "DocumentMoniker": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\Models\\FileOrganizationLog.cs",
+              "RelativeDocumentMoniker": "WpfApp1\\Models\\FileOrganizationLog.cs",
+              "ToolTip": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\Models\\FileOrganizationLog.cs",
+              "RelativeToolTip": "WpfApp1\\Models\\FileOrganizationLog.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T21:49:51.298Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "README.md",
+              "DocumentMoniker": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\README.md",
+              "RelativeDocumentMoniker": "WpfApp1\\README.md",
+              "ToolTip": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\README.md",
+              "RelativeToolTip": "WpfApp1\\README.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-05-09T21:53:43.849Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "WpfApp1.csproj",
+              "DocumentMoniker": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\WpfApp1.csproj",
+              "RelativeDocumentMoniker": "WpfApp1\\WpfApp1.csproj",
+              "ToolTip": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\WpfApp1.csproj",
+              "RelativeToolTip": "WpfApp1\\WpfApp1.csproj",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAwwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-05-09T21:48:40.887Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "WpfApp1\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\anwar\\Downloads\\FileOrganizerA\\WpfApp1\\WpfApp1\\MainWindow.xaml.cs",
+              "RelativeToolTip": "WpfApp1\\MainWindow.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T21:41:58.828Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
