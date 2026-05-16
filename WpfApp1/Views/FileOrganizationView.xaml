@@ -8,16 +8,19 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
         <TextBlock Grid.Row="0" Text="Folder Selection &amp; Organization" Foreground="#FF6B35" FontSize="20" FontWeight="Bold" Margin="20,20,20,10"/>
 
-        <!-- Content -->
-        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <!-- Drop Zone Section -->
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,10">
             <!-- Header -->
-            <TextBlock Text="Folder Selection (Drop Zone)" Foreground="#FF6B35" FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
+            <TextBlock Text="Folder Selection (Drop Zone)" Foreground="#FF6B35" FontSize="16" FontWeight="Bold" Margin="0,0,0,15"/>
 
             <!-- Drop Zone -->
             <Border x:Name="DropZone" 
@@ -25,25 +28,61 @@
                     BorderBrush="#FF6B35" 
                     Background="#3B3B3B" 
                     CornerRadius="10" 
-                    Height="250" 
+                    Height="200" 
                     Width="600"
                     AllowDrop="True">
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                     <!-- Folder Icon -->
-                    <TextBlock Text="📁" FontSize="60" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Drag &amp; Drop Folder Here" Foreground="White" FontSize="16" HorizontalAlignment="Center" Margin="0,15,0,0"/>
-                    <TextBlock x:Name="FolderPathText" Text="Select a folder..." Foreground="#999999" FontSize="12" HorizontalAlignment="Center" Margin="0,10,0,0"/>
-                    <Button Content="Browse Folder" Background="#FF6B35" Foreground="White" Padding="15,8" Margin="0,20,0,0" HorizontalAlignment="Center" Width="150" Height="40" Click="BrowseFolder_Click"/>
+                    <TextBlock Text="📁" FontSize="50" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Drag &amp; Drop Folder Here" Foreground="White" FontSize="14" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                    <TextBlock x:Name="FolderPathText" Text="Select a folder..." Foreground="#999999" FontSize="11" HorizontalAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap" MaxWidth="550"/>
+                    <Button Content="Browse Folder" Background="#FF6B35" Foreground="White" Padding="15,8" Margin="0,15,0,0" HorizontalAlignment="Center" Width="150" Height="35" Click="BrowseFolder_Click" FontWeight="Bold"/>
                 </StackPanel>
             </Border>
 
             <!-- File Statistics -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0">
                 <TextBlock Text="Total Files: " Foreground="White" FontSize="12"/>
                 <TextBlock x:Name="TotalFilesText" Text="0" Foreground="#FF6B35" FontSize="12" FontWeight="Bold"/>
                 <TextBlock Text=" | Size: " Foreground="White" FontSize="12" Margin="20,0,0,0"/>
                 <TextBlock x:Name="TotalSizeText" Text="0 B" Foreground="#FF6B35" FontSize="12" FontWeight="Bold"/>
             </StackPanel>
         </StackPanel>
+
+        <!-- Organize Action Section -->
+        <Border Grid.Row="2" Background="#3B3B3B" Margin="20,10,20,10" Padding="15" CornerRadius="5">
+            <StackPanel>
+                <TextBlock Text="File Organization" Foreground="White" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="OrganizeBtn" Content="▶ Start Organization" Background="#4CAF50" Foreground="White" Padding="20,10" Click="OrganizeFiles_Click" FontWeight="Bold" Width="200" Height="40" IsEnabled="False"/>
+                    <Button Content="🔄 Refresh" Background="#2196F3" Foreground="White" Padding="15,10" Click="RefreshFolderStats_Click" Margin="10,0,0,0" Width="120" Height="40" FontWeight="Bold"/>
+                    <TextBlock x:Name="StatusText" Text="Ready" Foreground="#CCCCCC" VerticalAlignment="Center" Margin="20,0,0,0"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Results Display -->
+        <Border Grid.Row="3" Background="#3B3B3B" Margin="20,10,20,20" Padding="15" CornerRadius="5">
+            <StackPanel>
+                <TextBlock Text="Organization Report" Foreground="#FF6B35" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                <ScrollViewer Height="300" Background="#2B2B2B" Padding="10" BorderBrush="#FF6B35" BorderThickness="1">
+                    <TextBlock x:Name="ResultsText" 
+                               Foreground="#00FF00" 
+                               FontFamily="Courier New" 
+                               FontSize="11"
+                               TextWrapping="Wrap"
+                               Text="Results will appear here..."/>
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="4" Background="#1E1E1E" Padding="20,10" BorderBrush="#FF6B35" BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="FolderStatusText" Foreground="#CCCCCC" FontSize="11" Text="No folder selected"/>
+                <TextBlock Text=" | " Foreground="#666666" Margin="10,0,10,0"/>
+                <TextBlock x:Name="RuleStatusText" Foreground="#CCCCCC" FontSize="11" Text="0 active rules"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>
