@@ -2,19 +2,22 @@
 using System.Windows.Input;
 using WpfApp1.Data;
 using WpfApp1.Services;
+using WpfApp1.Views;
 
 namespace WpfApp1
 {
     public partial class MainWindow : Window
     {
         private FileOrganizerContext _dbContext;
-        private string _currentFolderPath = string.Empty;
+        private FileOrganizationView _fileOrganizationView;
+        private RuleManagementView _ruleManagementView;
 
         public MainWindow()
         {
             InitializeComponent();
             InitializeDatabase();
-            SetupDragAndDrop();
+            InitializeViews();
+            Loaded += (s, e) => NavigateToFileOrganization(null, null);
         }
 
         private void InitializeDatabase()
@@ -22,10 +25,7 @@ namespace WpfApp1
             try
             {
                 _dbContext = new FileOrganizerContext();
-
-                // Create database if it doesn't exist
                 _dbContext.Database.EnsureCreated();
-
                 MessageBox.Show("Database initialized successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -34,95 +34,52 @@ namespace WpfApp1
             }
         }
 
+        private void InitializeViews()
+        {
+            _fileOrganizationView = new FileOrganizationView();
+            _ruleManagementView = new RuleManagementView();
+        }
+
+        private void NavigateToFileOrganization(object sender, RoutedEventArgs e)
+        {
+            ContentHost.Children.Clear();
+            ContentHost.Children.Add(_fileOrganizationView);
+            if (RuleManagementBtn != null) RuleManagementBtn.Background = System.Windows.Media.Brushes.Gray;
+            if (FileOrganizationBtn != null) FileOrganizationBtn.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 107, 53));
+        }
+
+        private void NavigateToRuleManagement(object sender, RoutedEventArgs e)
+        {
+            ContentHost.Children.Clear();
+            ContentHost.Children.Add(_ruleManagementView);
+            if (RuleManagementBtn != null) RuleManagementBtn.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 107, 53));
+            if (FileOrganizationBtn != null) FileOrganizationBtn.Background = System.Windows.Media.Brushes.Gray;
+        }
+
         private void SetupDragAndDrop()
         {
-            DropZone.AllowDrop = true;
-            DropZone.DragOver += DropZone_DragOver;
-            DropZone.Drop += DropZone_Drop;
+            // Drag-drop is now in FileOrganizationView
         }
 
         private void DropZone_DragOver(object sender, System.Windows.DragEventArgs e)
         {
-            e.Effects = System.Windows.DragDropEffects.Copy;
-            e.Handled = true;
+            // Not used - moved to FileOrganizationView
         }
 
         private void DropZone_Drop(object sender, System.Windows.DragEventArgs e)
         {
-            try
-            {
-                if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
-                {
-                    string[] files = (string[])e.Data.GetData(System.Windows.DataFormats.FileDrop);
-
-                    if (files.Length > 0)
-                    {
-                        string path = files[0];
-
-                        // Check if it's a folder
-                        if (System.IO.Directory.Exists(path))
-                        {
-                            LoadFolder(path);
-                        }
-                        else if (System.IO.File.Exists(path))
-                        {
-                            // If file, get its directory
-                            string folderPath = System.IO.Path.GetDirectoryName(path);
-                            if (!string.IsNullOrEmpty(folderPath))
-                            {
-                                LoadFolder(folderPath);
-                            }
-                        }
-                    }
-                }
-                e.Handled = true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading folder: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            // Not used - moved to FileOrganizationView
         }
 
         private void LoadFolder(string folderPath)
         {
-            if (!FolderStructureService.IsValidFolderPath(folderPath))
-            {
-                MessageBox.Show("Invalid folder path!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            _currentFolderPath = folderPath;
-
-            // Update UI with folder path
-            FolderPathText.Text = folderPath;
-
-            // Get file statistics
-            var (fileCount, totalSize) = FolderStructureService.GetFolderStats(folderPath);
-            TotalFilesText.Text = fileCount.ToString();
-            TotalSizeText.Text = FolderStructureService.FormatFileSize(totalSize);
+            // Not used - moved to FileOrganizationView
         }
 
         // Browse Folder Button Click Event
         private void BrowseFolder_Click(object sender, RoutedEventArgs e)
         {
-            var openDialog = new Microsoft.Win32.OpenFileDialog()
-            {
-                Filter = "All folders|*.*",
-                FilterIndex = 1,
-                ValidateNames = false,
-                CheckFileExists = false,
-                CheckPathExists = true,
-                FileName = "Folder Selection"
-            };
-
-            if (openDialog.ShowDialog() == true)
-            {
-                string path = System.IO.Path.GetDirectoryName(openDialog.FileName);
-                if (!string.IsNullOrEmpty(path))
-                {
-                    LoadFolder(path);
-                }
-            }
+            // Not used - moved to FileOrganizationView
         }
 
         private void Window_Closed(object? sender, EventArgs e)
