@@ -113,7 +113,7 @@
                         <DataGridTextColumn Header="Date/Time" Binding="{Binding ProcessedDate, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="150" Foreground="White"/>
                         <DataGridTextColumn Header="Source File" Binding="{Binding SourceFilePath}" Width="250" Foreground="White"/>
                         <DataGridTextColumn Header="Destination" Binding="{Binding DestinationFilePath}" Width="200" Foreground="White"/>
-                        <DataGridTextColumn Header="Size" Binding="{Binding FileSizeBytes, Converter={StaticResource FileSizeConverter}}" Width="80" Foreground="White"/>
+                        <DataGridTextColumn Header="Size" Binding="{Binding FileSizeBytes}" Width="80" Foreground="White"/>
                         <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="80" Foreground="White">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
