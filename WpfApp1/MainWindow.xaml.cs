@@ -12,7 +12,10 @@ namespace WpfApp1
         private FileOrganizationView _fileOrganizationView;
         private RuleManagementView _ruleManagementView;
         private AnalyticsView _analyticsView;
-        private SchedulerView _schedulerView;        public MainWindow()
+        private SchedulerView _schedulerView;
+        private SettingsView _settingsView;
+
+        public MainWindow()
         {
             InitializeComponent();
             InitializeDatabase();
@@ -40,6 +43,7 @@ namespace WpfApp1
             _ruleManagementView = new RuleManagementView();
             _analyticsView = new AnalyticsView();
             _schedulerView = new SchedulerView();
+            _settingsView = new SettingsView();
         }
 
         private void NavigateToFileOrganization(object sender, RoutedEventArgs e)
@@ -102,6 +106,18 @@ namespace WpfApp1
             if (FileOrganizationBtn != null) FileOrganizationBtn.Background = System.Windows.Media.Brushes.Gray;
             if (AnalyticsBtn != null) AnalyticsBtn.Background = System.Windows.Media.Brushes.Gray;
             if (SchedulerBtn != null) SchedulerBtn.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 107, 53));
+            if (SettingsBtn != null) SettingsBtn.Background = System.Windows.Media.Brushes.Gray;
+        }
+
+        private void NavigateToSettings(object sender, RoutedEventArgs e)
+        {
+            ContentHost.Children.Clear();
+            ContentHost.Children.Add(_settingsView);
+            if (RuleManagementBtn != null) RuleManagementBtn.Background = System.Windows.Media.Brushes.Gray;
+            if (FileOrganizationBtn != null) FileOrganizationBtn.Background = System.Windows.Media.Brushes.Gray;
+            if (AnalyticsBtn != null) AnalyticsBtn.Background = System.Windows.Media.Brushes.Gray;
+            if (SchedulerBtn != null) SchedulerBtn.Background = System.Windows.Media.Brushes.Gray;
+            if (SettingsBtn != null) SettingsBtn.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 107, 53));
         }
 
         private void Window_Closed(object? sender, EventArgs e)
