@@ -1,0 +1,140 @@
+<UserControl x:Class="WpfApp1.Views.SchedulerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             Background="#2B2B2B">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Grid.Row="0" Text="Automated Scheduling" Foreground="#FF6B35" FontSize="20" FontWeight="Bold" Margin="20,20,20,10"/>
+
+        <!-- Create Schedule Section -->
+        <Border Grid.Row="1" Background="#3B3B3B" Margin="20,10,20,10" Padding="15" CornerRadius="5">
+            <StackPanel>
+                <TextBlock Text="Create New Schedule" Foreground="White" FontSize="14" FontWeight="Bold" Margin="0,0,0,15"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="120"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Schedule Name -->
+                    <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,10,0">
+                        <TextBlock Text="Schedule Name:" Foreground="#CCCCCC" FontSize="11"/>
+                        <TextBox x:Name="ScheduleNameInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Height="30" Margin="0,5,0,0"/>
+                    </StackPanel>
+
+                    <!-- Schedule Type -->
+                    <StackPanel Grid.Column="1" Grid.Row="0" Margin="10,0,10,0">
+                        <TextBlock Text="Type:" Foreground="#CCCCCC" FontSize="11"/>
+                        <ComboBox x:Name="ScheduleTypeCombo" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Height="30" Margin="0,5,0,0">
+                            <ComboBoxItem>Daily</ComboBoxItem>
+                            <ComboBoxItem>Weekly</ComboBoxItem>
+                            <ComboBoxItem>Monthly</ComboBoxItem>
+                            <ComboBoxItem>Custom</ComboBoxItem>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Time -->
+                    <StackPanel Grid.Column="2" Grid.Row="0" Margin="10,0,10,0">
+                        <TextBlock Text="Time (HH:mm):" Foreground="#CCCCCC" FontSize="11"/>
+                        <TextBox x:Name="TimeInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Height="30" Margin="0,5,0,0" Text="21:00"/>
+                    </StackPanel>
+
+                    <!-- Target Folder (Drag & Drop enabled) -->
+                    <StackPanel Grid.Column="3" Grid.Row="0" Margin="10,0,10,0">
+                        <TextBlock Text="Target Folder (Drag &amp; Drop):" Foreground="#CCCCCC" FontSize="11"/>
+                        <TextBox x:Name="FolderInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Height="30" Margin="0,5,0,0" AllowDrop="True" DragOver="FolderInput_DragOver" Drop="FolderInput_Drop" TextWrapping="NoWrap"/>
+                    </StackPanel>
+
+                    <!-- Create Button -->
+                    <Button Grid.Column="4" Grid.Row="0" Content="Create Schedule" Background="#4CAF50" Foreground="White" Padding="15,0" Click="CreateSchedule_Click" FontWeight="Bold" Height="40" VerticalAlignment="Bottom" Margin="10,0,0,0"/>
+
+                    <!-- Additional Options Row -->
+                    <StackPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="5" Orientation="Horizontal" Margin="0,10,0,0">
+                        <TextBlock Text="Days (Weekly - comma separated 0-6):" Foreground="#CCCCCC" FontSize="10" VerticalAlignment="Center"/>
+                        <TextBox x:Name="DaysInput" Background="#2B2B2B" Foreground="White" Padding="5" BorderBrush="#FF6B35" BorderThickness="1" Width="100" Margin="10,0,20,0" Height="25" ToolTip="0=Sunday, 1=Monday, etc."/>
+                        <TextBlock Text="Interval (Custom - hours):" Foreground="#CCCCCC" FontSize="10" VerticalAlignment="Center"/>
+                        <TextBox x:Name="IntervalInput" Background="#2B2B2B" Foreground="White" Padding="5" BorderBrush="#FF6B35" BorderThickness="1" Width="60" Margin="10,0,0,0" Height="25" Text="6"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Schedules List -->
+        <Border Grid.Row="2" Background="#3B3B3B" Margin="20,10,20,10" Padding="15" CornerRadius="5">
+            <StackPanel>
+                <TextBlock Text="Active Schedules" Foreground="#FF6B35" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                <DataGrid x:Name="SchedulesDataGrid" 
+                          Background="#2B2B2B" 
+                          Foreground="White" 
+                          AutoGenerateColumns="False" 
+                          RowBackground="#3B3B3B" 
+                          AlternatingRowBackground="#454545"
+                          BorderBrush="#FF6B35" 
+                          BorderThickness="1">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50" IsReadOnly="True" Foreground="White"/>
+                        <DataGridTextColumn Header="Schedule Name" Binding="{Binding ScheduleName}" Width="150" Foreground="White"/>
+                        <DataGridTextColumn Header="Type" Binding="{Binding ScheduleType}" Width="100" Foreground="White"/>
+                        <DataGridTextColumn Header="Target Folder" Binding="{Binding TargetFolderPath}" Width="250" Foreground="White"/>
+                        <DataGridTextColumn Header="Time" Binding="{Binding StartTime}" Width="80" Foreground="White"/>
+                        <DataGridCheckBoxColumn Header="Active" Binding="{Binding IsActive}" Width="70"/>
+                        <DataGridTextColumn Header="Last Run" Binding="{Binding LastRunTime, StringFormat='yyyy-MM-dd HH:mm'}" Width="150" IsReadOnly="True" Foreground="#CCCCCC"/>
+                        <DataGridTextColumn Header="Next Run" Binding="{Binding NextRunTime, StringFormat='yyyy-MM-dd HH:mm'}" Width="150" IsReadOnly="True" Foreground="#FFD700"/>
+                        <DataGridTextColumn Header="Status" Binding="{Binding LastRunStatus}" Width="80" Foreground="White">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding LastRunStatus}" Value="Success">
+                                            <Setter Property="Foreground" Value="#4CAF50"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding LastRunStatus}" Value="Failed">
+                                            <Setter Property="Foreground" Value="#F44336"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTemplateColumn Header="Actions" Width="150">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="5,0">
+                                        <Button Content="Run Now" Background="#2196F3" Foreground="White" Padding="8,4" Click="RunNow_Click" Tag="{Binding Id}" FontSize="10" Width="70" Height="25"/>
+                                        <Button Content="Delete" Background="#F44336" Foreground="White" Padding="8,4" Click="DeleteSchedule_Click" Tag="{Binding Id}" Margin="5,0,0,0" FontSize="10" Width="70" Height="25"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+        </Border>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="3" Background="#1E1E1E" Padding="20,10" BorderBrush="#FF6B35" BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="SchedulerStatusText" Foreground="#CCCCCC" FontSize="11" Text="Scheduler Status: Ready"/>
+                <TextBlock Text=" | " Foreground="#666666" Margin="10,0"/>
+                <TextBlock x:Name="ScheduleCountText" Foreground="#CCCCCC" FontSize="11" Text="Active Schedules: 0"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
