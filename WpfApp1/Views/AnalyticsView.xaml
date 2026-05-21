@@ -1,0 +1,145 @@
+<UserControl x:Class="WpfApp1.Views.AnalyticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             Background="#2B2B2B">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Grid.Row="0" Text="Analytics &amp; Statistics" Foreground="#FF6B35" FontSize="20" FontWeight="Bold" Margin="20,20,20,10"/>
+
+        <!-- Statistics Summary Section -->
+        <Border Grid.Row="1" Background="#3B3B3B" Margin="20,10,20,10" Padding="15" CornerRadius="5">
+            <StackPanel>
+                <TextBlock Text="Organization Summary" Foreground="White" FontSize="14" FontWeight="Bold" Margin="0,0,0,15"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Statistic Cards -->
+                    <Border Grid.Column="0" Grid.Row="0" Margin="0,0,10,10" Background="#2B2B2B" Padding="10" CornerRadius="3">
+                        <StackPanel>
+                            <TextBlock Text="Total Organized" Foreground="#CCCCCC" FontSize="11"/>
+                            <TextBlock x:Name="TotalOrganizedText" Text="0" Foreground="#4CAF50" FontSize="20" FontWeight="Bold"/>
+                            <TextBlock Text="files" Foreground="#999999" FontSize="10"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Grid.Row="0" Margin="5,0,5,10" Background="#2B2B2B" Padding="10" CornerRadius="3">
+                        <StackPanel>
+                            <TextBlock Text="Total Size Moved" Foreground="#CCCCCC" FontSize="11"/>
+                            <TextBlock x:Name="TotalSizeText" Text="0 MB" Foreground="#2196F3" FontSize="20" FontWeight="Bold"/>
+                            <TextBlock Text="data" Foreground="#999999" FontSize="10"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="2" Grid.Row="0" Margin="5,0,5,10" Background="#2B2B2B" Padding="10" CornerRadius="3">
+                        <StackPanel>
+                            <TextBlock Text="Success Rate" Foreground="#CCCCCC" FontSize="11"/>
+                            <TextBlock x:Name="SuccessRateText" Text="0%" Foreground="#FFD700" FontSize="20" FontWeight="Bold"/>
+                            <TextBlock Text="successful" Foreground="#999999" FontSize="10"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="3" Grid.Row="0" Margin="5,0,0,10" Background="#2B2B2B" Padding="10" CornerRadius="3">
+                        <StackPanel>
+                            <TextBlock Text="Failed Operations" Foreground="#CCCCCC" FontSize="11"/>
+                            <TextBlock x:Name="FailedCountText" Text="0" Foreground="#F44336" FontSize="20" FontWeight="Bold"/>
+                            <TextBlock Text="errors" Foreground="#999999" FontSize="10"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Time Period Stats -->
+                    <TextBlock Grid.Column="0" Grid.Row="1" Foreground="#CCCCCC" FontSize="10" Margin="0,5,10,0">
+                        <Run Text="Today: "/>
+                        <Run x:Name="TodayCountText" Foreground="#4CAF50" Text="0"/>
+                        <Run Text=" files"/>
+                    </TextBlock>
+
+                    <TextBlock Grid.Column="1" Grid.Row="1" Foreground="#CCCCCC" FontSize="10" Margin="5,5,5,0">
+                        <Run Text="This Week: "/>
+                        <Run x:Name="WeekCountText" Foreground="#2196F3" Text="0"/>
+                        <Run Text=" files"/>
+                    </TextBlock>
+
+                    <TextBlock Grid.Column="2" Grid.Row="1" Foreground="#CCCCCC" FontSize="10" Margin="5,5,5,0">
+                        <Run Text="This Month: "/>
+                        <Run x:Name="MonthCountText" Foreground="#FFD700" Text="0"/>
+                        <Run Text=" files"/>
+                    </TextBlock>
+
+                    <StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal" Margin="5,5,0,0">
+                        <Button Content="🔄 Refresh" Background="#FF6B35" Foreground="White" Padding="10,5" Click="RefreshStats_Click" FontSize="10" Height="25"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Organization History Table -->
+        <Border Grid.Row="2" Background="#3B3B3B" Margin="20,10,20,10" Padding="15" CornerRadius="5">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="Organization History" Foreground="White" FontSize="14" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <TextBlock Text="(Last 50 operations)" Foreground="#999999" FontSize="11" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <DataGrid x:Name="HistoryDataGrid" 
+                          Background="#2B2B2B" 
+                          Foreground="White" 
+                          AutoGenerateColumns="False" 
+                          RowBackground="#3B3B3B" 
+                          AlternatingRowBackground="#454545"
+                          BorderBrush="#FF6B35" 
+                          BorderThickness="1"
+                          Height="350">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Date/Time" Binding="{Binding ProcessedDate, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="150" Foreground="White"/>
+                        <DataGridTextColumn Header="Source File" Binding="{Binding SourceFilePath}" Width="250" Foreground="White"/>
+                        <DataGridTextColumn Header="Destination" Binding="{Binding DestinationFilePath}" Width="200" Foreground="White"/>
+                        <DataGridTextColumn Header="Size" Binding="{Binding FileSizeBytes}" Width="80" Foreground="White"/>
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="80" Foreground="White">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Status}" Value="Success">
+                                            <Setter Property="Foreground" Value="#4CAF50"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Status}" Value="Failed">
+                                            <Setter Property="Foreground" Value="#F44336"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Status}" Value="Skipped">
+                                            <Setter Property="Foreground" Value="#FF9800"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Error/Note" Binding="{Binding ErrorMessage}" Width="150" Foreground="#CCCCCC"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+        </Border>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="3" Background="#1E1E1E" Padding="20,10" BorderBrush="#FF6B35" BorderThickness="0,1,0,0">
+            <TextBlock x:Name="StatusText" Foreground="#CCCCCC" FontSize="11" Text="Ready"/>
+        </Border>
+    </Grid>
+</UserControl>

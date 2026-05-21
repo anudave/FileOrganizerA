@@ -11,6 +11,7 @@ namespace WpfApp1
         private FileOrganizerContext _dbContext;
         private FileOrganizationView _fileOrganizationView;
         private RuleManagementView _ruleManagementView;
+        private AnalyticsView _analyticsView;
 
         public MainWindow()
         {
@@ -38,6 +39,7 @@ namespace WpfApp1
         {
             _fileOrganizationView = new FileOrganizationView();
             _ruleManagementView = new RuleManagementView();
+            _analyticsView = new AnalyticsView();
         }
 
         private void NavigateToFileOrganization(object sender, RoutedEventArgs e)
@@ -54,6 +56,16 @@ namespace WpfApp1
             ContentHost.Children.Add(_ruleManagementView);
             if (RuleManagementBtn != null) RuleManagementBtn.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 107, 53));
             if (FileOrganizationBtn != null) FileOrganizationBtn.Background = System.Windows.Media.Brushes.Gray;
+            if (AnalyticsBtn != null) AnalyticsBtn.Background = System.Windows.Media.Brushes.Gray;
+        }
+
+        private void NavigateToAnalytics(object sender, RoutedEventArgs e)
+        {
+            ContentHost.Children.Clear();
+            ContentHost.Children.Add(_analyticsView);
+            if (RuleManagementBtn != null) RuleManagementBtn.Background = System.Windows.Media.Brushes.Gray;
+            if (FileOrganizationBtn != null) FileOrganizationBtn.Background = System.Windows.Media.Brushes.Gray;
+            if (AnalyticsBtn != null) AnalyticsBtn.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 107, 53));
         }
 
         private void SetupDragAndDrop()
