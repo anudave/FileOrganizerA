@@ -57,10 +57,10 @@
                         <TextBox x:Name="TimeInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Height="30" Margin="0,5,0,0" Text="21:00"/>
                     </StackPanel>
 
-                    <!-- Target Folder -->
+                    <!-- Target Folder (Drag & Drop enabled) -->
                     <StackPanel Grid.Column="3" Grid.Row="0" Margin="10,0,10,0">
-                        <TextBlock Text="Target Folder:" Foreground="#CCCCCC" FontSize="11"/>
-                        <TextBox x:Name="FolderInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Height="30" Margin="0,5,0,0"/>
+                        <TextBlock Text="Target Folder (Drag &amp; Drop):" Foreground="#CCCCCC" FontSize="11"/>
+                        <TextBox x:Name="FolderInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Height="30" Margin="0,5,0,0" AllowDrop="True" DragOver="FolderInput_DragOver" Drop="FolderInput_Drop" TextWrapping="NoWrap"/>
                     </StackPanel>
 
                     <!-- Create Button -->

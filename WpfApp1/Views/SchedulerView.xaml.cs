@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using WpfApp1.Data;
 using WpfApp1.Models;
 using WpfApp1.Services;
@@ -34,6 +36,40 @@ namespace WpfApp1.Views
                 _schedulerService.StartScheduler();
                 SchedulerStatusText.Text = "Scheduler Status: ✓ Running";
             }
+        }
+
+        private void FolderInput_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+            e.Handled = true;
+        }
+
+        private void FolderInput_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files.Length > 0)
+                {
+                    string path = files[0];
+                    if (Directory.Exists(path))
+                    {
+                        FolderInput.Text = path;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please drop a folder, not a file.", "Invalid Drop", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            e.Handled = true;
         }
 
         private void LoadSchedules()
