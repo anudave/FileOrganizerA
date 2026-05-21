@@ -37,7 +37,7 @@
             <Button x:Name="FileOrganizationBtn" Content="File Organization" Background="#FF6B35" Foreground="White" Margin="0,10,0,10" Padding="10" FontWeight="Bold" Height="45" Click="NavigateToFileOrganization"/>
             <Button x:Name="AnalyticsBtn" Content="Analytics" Background="#FF6B35" Foreground="White" Margin="0,10,0,10" Padding="10" FontWeight="Bold" Height="45" Click="NavigateToAnalytics"/>
             <Button x:Name="SchedulerBtn" Content="Scheduler" Background="#FF6B35" Foreground="White" Margin="0,10,0,10" Padding="10" FontWeight="Bold" Height="45" Click="NavigateToScheduler"/>
-            <Button Content="Settings" Background="#FF6B35" Foreground="White" Margin="0,10,0,10" Padding="10" FontWeight="Bold" Height="45"/>
+            <Button x:Name="SettingsBtn" Content="Settings" Background="#FF6B35" Foreground="White" Margin="0,10,0,10" Padding="10" FontWeight="Bold" Height="45" Click="NavigateToSettings"/>
         </StackPanel>
 
         <!-- Main Content Area (Content Host) -->

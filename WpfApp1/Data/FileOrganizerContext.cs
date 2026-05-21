@@ -9,6 +9,7 @@ namespace WpfApp1.Data
         public DbSet<FileOrganizationRule> FileOrganizationRules { get; set; }
         public DbSet<FileOrganizationLog> FileOrganizationLogs { get; set; }
         public DbSet<FileOrganizationSchedule> FileOrganizationSchedules { get; set; }
+        public DbSet<AppSettings> AppSettings { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
