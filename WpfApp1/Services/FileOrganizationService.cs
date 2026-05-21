@@ -310,5 +310,21 @@ namespace WpfApp1.Services
                 return (0, 0, 0, 0);
             }
         }
+
+        /// <summary>
+        /// Public method to check if a filename matches a rule
+        /// </summary>
+        public bool MatchesRule(string fileName, FileOrganizationRule rule)
+        {
+            try
+            {
+                var extension = Path.GetExtension(fileName);
+                return MatchesPattern(extension, rule.FilePattern);
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

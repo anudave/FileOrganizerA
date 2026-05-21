@@ -10,6 +10,8 @@ namespace WpfApp1.Data
         public DbSet<FileOrganizationLog> FileOrganizationLogs { get; set; }
         public DbSet<FileOrganizationSchedule> FileOrganizationSchedules { get; set; }
         public DbSet<AppSettings> AppSettings { get; set; }
+        public DbSet<CloudStorageAccount> CloudStorageAccounts { get; set; }
+        public DbSet<CloudOrganizationLog> CloudOrganizationLogs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
