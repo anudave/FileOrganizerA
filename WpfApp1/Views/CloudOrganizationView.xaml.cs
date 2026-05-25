@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -68,52 +69,88 @@ namespace WpfApp1.Views
             }
         }
 
-        private void LoginGoogle_Click(object sender, RoutedEventArgs e)
+        private async void LoginGoogle_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 StatusText.Text = "Authenticating with Google...";
+                LoginBtn.IsEnabled = false;
 
-                // NOTE: In a real implementation, you would:
-                // 1. Open browser for OAuth consent
-                // 2. Get authorization code
-                // 3. Exchange code for access token
-                // 4. Save credentials securely
+                // Create OAuth service
+                var oauthService = new GoogleOAuthService();
 
-                // For demonstration, we'll show what the flow would look like
-                MessageBox.Show(
-                    "OAuth Integration Instructions:\n\n" +
-                    "1. Visit Google Cloud Console (console.cloud.google.com)\n" +
-                    "2. Create a new project\n" +
-                    "3. Enable Google Drive API\n" +
-                    "4. Create OAuth 2.0 credentials (Desktop App)\n" +
-                    "5. Download credentials.json\n" +
-                    "6. Place in application directory\n\n" +
-                    "Then this button will authenticate with your Google account.",
-                    "Google Drive OAuth Setup",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information
-                );
-
-                // Simulate successful authentication for demo
-                var account = new CloudStorageAccount
+                // Check if credentials.json exists
+                if (!System.IO.File.Exists(System.IO.Path.Combine(AppContext.BaseDirectory, "credentials.json")))
                 {
-                    UserEmail = "demo@gmail.com",
-                    AccessToken = "demo_access_token",
-                    RefreshToken = "demo_refresh_token",
-                    TokenExpiresAt = DateTime.Now.AddHours(1),
-                    IsConnected = true
-                };
+                    MessageBox.Show(
+                        "Setup Required:\n\n" +
+                        "1. Visit: https://console.cloud.google.com\n" +
+                        "2. Create a new project\n" +
+                        "3. Enable Google Drive API\n" +
+                        "4. Create OAuth 2.0 credentials (Desktop App)\n" +
+                        "5. Download credentials.json\n" +
+                        "6. Save it to: " + AppContext.BaseDirectory + "\n\n" +
+                        "Then try again.",
+                        "Google Drive Setup Required",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
+                    StatusText.Text = "Setup required";
+                    LoginBtn.IsEnabled = true;
+                    return;
+                }
 
-                _cloudService.SaveAccount(account);
-                UpdateConnectionStatus();
-                StatusText.Text = "Successfully connected to Google Drive!";
-                RefreshFiles_Click(null, null);
+                // Authenticate with Google (opens browser)
+                var credential = await oauthService.AuthenticateAsync();
+
+                if (credential != null)
+                {
+                    // Get user info from credential
+                    var userEmail = credential.UserId;
+
+                    // Save account to database
+                    var account = new CloudStorageAccount
+                    {
+                        Provider = "Google",
+                        UserEmail = userEmail,
+                        AccessToken = credential.Token.AccessToken,
+                        RefreshToken = credential.Token.RefreshToken,
+                        TokenExpiresAt = credential.Token.ExpiresInSeconds.HasValue 
+                            ? DateTime.Now.AddSeconds(credential.Token.ExpiresInSeconds.Value) 
+                            : DateTime.Now.AddHours(1),
+                        IsConnected = true,
+                        ConnectedDate = DateTime.Now,
+                        LastSyncDate = DateTime.Now,
+                        TotalFilesSynced = 0
+                    };
+
+                    _cloudService.SaveAccount(account);
+                    UpdateConnectionStatus();
+                    StatusText.Text = "✓ Successfully authenticated with Google Drive!";
+                    MessageBox.Show($"Connected as: {userEmail}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // Load files after successful login
+                    RefreshFiles_Click(null, null);
+                }
+                else
+                {
+                    StatusText.Text = "Authentication cancelled";
+                    MessageBox.Show("Authentication was cancelled", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (FileNotFoundException fex)
+            {
+                MessageBox.Show($"Error: {fex.Message}", "File Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusText.Text = "Credentials file not found";
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Authentication error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 StatusText.Text = "Authentication failed";
+            }
+            finally
+            {
+                LoginBtn.IsEnabled = true;
             }
         }
 
