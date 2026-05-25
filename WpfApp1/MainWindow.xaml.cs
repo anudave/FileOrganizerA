@@ -28,7 +28,7 @@ namespace WpfApp1
         {
             try
             {
-                _dbContext = new FileOrganizerContext();
+                _dbContext = DbContextService.GetInstance();
                 _dbContext.Database.EnsureCreated();
                 MessageBox.Show("Database initialized successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -140,6 +140,7 @@ namespace WpfApp1
         private void Window_Closed(object? sender, EventArgs e)
         {
             _dbContext?.Dispose();
+            DbContextService.Dispose();
         }
     }
 }

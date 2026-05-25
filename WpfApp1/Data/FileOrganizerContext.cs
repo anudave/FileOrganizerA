@@ -28,6 +28,19 @@ namespace WpfApp1.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Configure AppSettings
+            modelBuilder.Entity<AppSettings>()
+                .HasKey(s => s.Id);
+
+            modelBuilder.Entity<AppSettings>()
+                .Property(s => s.DefaultOrganizationFolder)
+                .IsRequired(false);
+
+            modelBuilder.Entity<AppSettings>()
+                .Property(s => s.Theme)
+                .IsRequired()
+                .HasMaxLength(10);
+
             // Configure FileOrganizationRule
             modelBuilder.Entity<FileOrganizationRule>()
                 .HasKey(r => r.Id);

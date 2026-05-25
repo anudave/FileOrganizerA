@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WpfApp1.Data;
 
@@ -10,9 +11,11 @@ using WpfApp1.Data;
 namespace WpfApp1.Data.Migrations
 {
     [DbContext(typeof(FileOrganizerContext))]
-    partial class FileOrganizerContextModelSnapshot : ModelSnapshot
+    [Migration("20260525192809_FixAppSettingsNullability")]
+    partial class FixAppSettingsNullability
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
