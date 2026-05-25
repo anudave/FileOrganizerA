@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WpfApp1.Data;
 
@@ -10,9 +11,11 @@ using WpfApp1.Data;
 namespace WpfApp1.Data.Migrations
 {
     [DbContext(typeof(FileOrganizerContext))]
-    partial class FileOrganizerContextModelSnapshot : ModelSnapshot
+    [Migration("20260521193727_AddCloudStorageTables")]
+    partial class AddCloudStorageTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
@@ -27,6 +30,7 @@ namespace WpfApp1.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DefaultOrganizationFolder")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("EnableNotifications")
@@ -40,7 +44,6 @@ namespace WpfApp1.Data.Migrations
 
                     b.Property<string>("Theme")
                         .IsRequired()
-                        .HasMaxLength(10)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

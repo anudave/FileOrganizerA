@@ -24,7 +24,7 @@ namespace WpfApp1.Views
 
         private void InitializeServices()
         {
-            _dbContext = new FileOrganizerContext();
+            _dbContext = DbContextService.GetInstance();
             _settingsService = new SettingsService(_dbContext);
         }
 
@@ -50,7 +50,8 @@ namespace WpfApp1.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading settings: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                string errorMsg = ex.InnerException?.Message ?? ex.Message;
+                MessageBox.Show($"Error loading settings: {errorMsg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -126,7 +127,8 @@ namespace WpfApp1.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving settings: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                string errorMsg = ex.InnerException?.Message ?? ex.Message;
+                MessageBox.Show($"Error saving settings: {errorMsg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

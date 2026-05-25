@@ -24,7 +24,7 @@ namespace WpfApp1.Views
 
         private void InitializeServices()
         {
-            _dbContext = new FileOrganizerContext();
+            _dbContext = DbContextService.GetInstance();
             _organizationService = new FileOrganizationService(_dbContext);
             _ruleService = new RuleManagementService(_dbContext);
         }

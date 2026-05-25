@@ -21,14 +21,21 @@ namespace WpfApp1.Services
         /// </summary>
         public AppSettings GetSettings()
         {
-            var settings = _dbContext.AppSettings.FirstOrDefault();
-            if (settings == null)
+            try
             {
-                settings = new AppSettings();
-                _dbContext.AppSettings.Add(settings);
-                _dbContext.SaveChanges();
+                var settings = _dbContext.AppSettings.FirstOrDefault();
+                if (settings == null)
+                {
+                    settings = new AppSettings();
+                    _dbContext.AppSettings.Add(settings);
+                    _dbContext.SaveChanges();
+                }
+                return settings;
             }
-            return settings;
+            catch (Exception ex)
+            {
+                throw new Exception($"Error retrieving settings: {ex.InnerException?.Message ?? ex.Message}");
+            }
         }
 
         /// <summary>
@@ -36,9 +43,33 @@ namespace WpfApp1.Services
         /// </summary>
         public void UpdateSettings(AppSettings settings)
         {
-            settings.LastModifiedDate = DateTime.Now;
-            _dbContext.AppSettings.Update(settings);
-            _dbContext.SaveChanges();
+            try
+            {
+                settings.LastModifiedDate = DateTime.Now;
+
+                // Check if the setting is already tracked
+                var existingSettings = _dbContext.AppSettings.Local.FirstOrDefault(x => x.Id == settings.Id);
+                if (existingSettings != null)
+                {
+                    // If already tracked, update properties directly
+                    existingSettings.Theme = settings.Theme;
+                    existingSettings.SchedulerAutoStart = settings.SchedulerAutoStart;
+                    existingSettings.EnableNotifications = settings.EnableNotifications;
+                    existingSettings.DefaultOrganizationFolder = settings.DefaultOrganizationFolder;
+                    existingSettings.LastModifiedDate = settings.LastModifiedDate;
+                }
+                else
+                {
+                    // Otherwise, update the detached entity
+                    _dbContext.AppSettings.Update(settings);
+                }
+
+                _dbContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating settings: {ex.InnerException?.Message ?? ex.Message}");
+            }
         }
 
         /// <summary>

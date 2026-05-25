@@ -10,6 +10,8 @@ namespace WpfApp1.Data
         public DbSet<FileOrganizationLog> FileOrganizationLogs { get; set; }
         public DbSet<FileOrganizationSchedule> FileOrganizationSchedules { get; set; }
         public DbSet<AppSettings> AppSettings { get; set; }
+        public DbSet<CloudStorageAccount> CloudStorageAccounts { get; set; }
+        public DbSet<CloudOrganizationLog> CloudOrganizationLogs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -25,6 +27,19 @@ namespace WpfApp1.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Configure AppSettings
+            modelBuilder.Entity<AppSettings>()
+                .HasKey(s => s.Id);
+
+            modelBuilder.Entity<AppSettings>()
+                .Property(s => s.DefaultOrganizationFolder)
+                .IsRequired(false);
+
+            modelBuilder.Entity<AppSettings>()
+                .Property(s => s.Theme)
+                .IsRequired()
+                .HasMaxLength(10);
 
             // Configure FileOrganizationRule
             modelBuilder.Entity<FileOrganizationRule>()
