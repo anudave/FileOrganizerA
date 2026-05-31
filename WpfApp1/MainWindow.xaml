@@ -35,7 +35,6 @@
             <!-- Navigation Buttons -->
             <Button x:Name="RuleManagementBtn" Content="Rule Management" Background="#FF6B35" Foreground="White" Margin="0,30,0,10" Padding="10" FontWeight="Bold" Height="45" Click="NavigateToRuleManagement"/>
             <Button x:Name="FileOrganizationBtn" Content="File Organization" Background="#FF6B35" Foreground="White" Margin="0,10,0,10" Padding="10" FontWeight="Bold" Height="45" Click="NavigateToFileOrganization"/>
-            <Button x:Name="CloudBtn" Content="☁ Cloud Storage" Background="#FF6B35" Foreground="White" Margin="0,10,0,10" Padding="10" FontWeight="Bold" Height="45" Click="NavigateToCloud"/>
             <Button x:Name="AnalyticsBtn" Content="Analytics" Background="#FF6B35" Foreground="White" Margin="0,10,0,10" Padding="10" FontWeight="Bold" Height="45" Click="NavigateToAnalytics"/>
             <Button x:Name="SchedulerBtn" Content="Scheduler" Background="#FF6B35" Foreground="White" Margin="0,10,0,10" Padding="10" FontWeight="Bold" Height="45" Click="NavigateToScheduler"/>
             <Button x:Name="SettingsBtn" Content="Settings" Background="#FF6B35" Foreground="White" Margin="0,10,0,10" Padding="10" FontWeight="Bold" Height="45" Click="NavigateToSettings"/>

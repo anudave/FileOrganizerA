@@ -34,11 +34,39 @@ namespace WpfApp1.Views
             DropZone.AllowDrop = true;
             DropZone.DragOver += DropZone_DragOver;
             DropZone.Drop += DropZone_Drop;
+            DropZone.DragLeave += DropZone_DragLeave;
+            DropZone.DragEnter += DropZone_DragEnter;
+        }
+
+        private void DropZone_DragEnter(object sender, System.Windows.DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
+            {
+                DropZone.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(76, 175, 80)); // Green
+                DropZone.BorderBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(76, 175, 80));
+                DropZone.Tag = "hovering";
+            }
+            e.Handled = true;
+        }
+
+        private void DropZone_DragLeave(object sender, System.Windows.DragEventArgs e)
+        {
+            DropZone.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(59, 59, 59)); // Dark gray
+            DropZone.BorderBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 107, 53)); // Orange
+            DropZone.Tag = "idle";
+            e.Handled = true;
         }
 
         private void DropZone_DragOver(object sender, System.Windows.DragEventArgs e)
         {
-            e.Effects = System.Windows.DragDropEffects.Copy;
+            if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
+            {
+                e.Effects = System.Windows.DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effects = System.Windows.DragDropEffects.None;
+            }
             e.Handled = true;
         }
 
@@ -46,35 +74,68 @@ namespace WpfApp1.Views
         {
             try
             {
+                // Reset visual state
+                DropZone.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(59, 59, 59));
+                DropZone.BorderBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 107, 53));
+                DropZone.Tag = "idle";
+
                 if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
                 {
                     string[] files = (string[])e.Data.GetData(System.Windows.DataFormats.FileDrop);
 
-                    if (files.Length > 0)
+                    if (files == null || files.Length == 0)
                     {
-                        string path = files[0];
+                        MessageBox.Show("No items were dropped. Please try again.", "Invalid Drop", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
 
-                        // Check if it's a folder
-                        if (System.IO.Directory.Exists(path))
+                    string path = files[0];
+
+                    // Check if it's a folder
+                    if (System.IO.Directory.Exists(path))
+                    {
+                        StatusText.Text = "Loading folder...";
+                        LoadFolder(path);
+                        StatusText.Text = "✓ Folder loaded successfully";
+                    }
+                    else if (System.IO.File.Exists(path))
+                    {
+                        // If file, get its directory
+                        string folderPath = System.IO.Path.GetDirectoryName(path);
+                        if (!string.IsNullOrEmpty(folderPath) && System.IO.Directory.Exists(folderPath))
                         {
-                            LoadFolder(path);
+                            StatusText.Text = "Loading folder from file...";
+                            LoadFolder(folderPath);
+                            StatusText.Text = "✓ Folder loaded successfully";
                         }
-                        else if (System.IO.File.Exists(path))
+                        else
                         {
-                            // If file, get its directory
-                            string folderPath = System.IO.Path.GetDirectoryName(path);
-                            if (!string.IsNullOrEmpty(folderPath))
-                            {
-                                LoadFolder(folderPath);
-                            }
+                            MessageBox.Show("Cannot access the parent folder.", "Access Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            StatusText.Text = "Error: Cannot access folder";
                         }
+                    }
+                    else
+                    {
+                        MessageBox.Show("The path is neither a file nor a folder.", "Invalid Path", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        StatusText.Text = "Error: Invalid path";
                     }
                 }
                 e.Handled = true;
             }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show("Access Denied: You don't have permission to access this folder.", "Access Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusText.Text = "Error: Access denied";
+            }
+            catch (System.IO.PathTooLongException)
+            {
+                MessageBox.Show("The path is too long. Please select a folder with a shorter path.", "Path Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusText.Text = "Error: Path too long";
+            }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading folder: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusText.Text = "Error: " + ex.GetType().Name;
             }
         }
 

@@ -1,0 +1,233 @@
+# ⏰ ETHIOPIAN TIME - CHEAT SHEET
+
+## Quick Facts
+- **Format:** HH:mm (24-hour)
+- **Timezone:** UTC+3 (East Africa)
+- **All times:** Ethiopian Time (EAT)
+- **Live clock:** In status bar (updates every second)
+
+---
+
+## Time Conversion (AM/PM to HH:mm)
+
+```
+00:00 ← 12:00 AM (Midnight)
+01:00 ← 1:00 AM
+02:00 ← 2:00 AM
+03:00 ← 3:00 AM
+04:00 ← 4:00 AM
+05:00 ← 5:00 AM
+
+06:00 ← 6:00 AM           14:00 ← 2:00 PM
+07:00 ← 7:00 AM           15:00 ← 3:00 PM
+08:00 ← 8:00 AM           16:00 ← 4:00 PM
+09:00 ← 9:00 AM           17:00 ← 5:00 PM
+10:00 ← 10:00 AM          18:00 ← 6:00 PM
+11:00 ← 11:00 AM          19:00 ← 7:00 PM
+12:00 ← 12:00 PM (Noon)   20:00 ← 8:00 PM
+13:00 ← 1:00 PM           21:00 ← 9:00 PM
+						   22:00 ← 10:00 PM
+						   23:00 ← 11:00 PM
+						   23:59 ← 11:59 PM
+```
+
+---
+
+## Days Code (Weekly Schedules)
+
+```
+0 = Sunday      3 = Wednesday   6 = Saturday
+1 = Monday      4 = Thursday
+2 = Tuesday     5 = Friday
+```
+
+### Common Combinations
+```
+1,2,3,4,5 = Weekdays (Mon-Fri)
+0,6 = Weekends (Sat-Sun)
+1,5 = Monday & Friday
+1,3,5 = Monday, Wednesday, Friday
+0,2,4,6 = Sunday, Tuesday, Thursday, Saturday
+```
+
+---
+
+## Create Schedule: Step-by-Step
+
+### Step 1: Open Scheduler
+Click "Scheduler" tab in left sidebar
+
+### Step 2: Enter Schedule Name
+```
+Example: Morning Organization
+		 Weekday Cleanup
+		 Evening Backup
+```
+
+### Step 3: Select Type
+```
+Daily    → Same time every day
+Weekly   → Specific days
+Monthly  → Specific day of month
+Custom   → Every N hours
+```
+
+### Step 4: Enter Time (HH:mm)
+```
+✓ CORRECT:   08:00, 12:30, 17:45, 21:00
+✗ WRONG:     8:00, 8:00 AM, 8am, 20:00 PM
+```
+
+### Step 5: For Weekly - Enter Days
+```
+Format: 0-6 comma separated
+Example: 1,3,5 (Monday, Wednesday, Friday)
+		1,2,3,4,5 (Weekdays)
+```
+
+### Step 6: Select Folder
+```
+Click [Browse] button
+Select target folder
+Click OK
+```
+
+### Step 7: Create
+```
+Click [Create Schedule] button
+✓ Schedule created!
+```
+
+---
+
+## Common Schedules
+
+### Daily Morning
+```
+Type: Daily
+Time: 08:00 (8 AM)
+Result: Every day at 8 AM EAT
+```
+
+### Weekday Business
+```
+Type: Weekly
+Time: 17:00 (5 PM)
+Days: 1,2,3,4,5
+Result: Mon-Fri at 5 PM EAT
+```
+
+### Twice Daily
+```
+Create 2 Daily schedules:
+- 08:00 (morning)
+- 17:00 (evening)
+```
+
+### Every 6 Hours
+```
+Type: Custom
+Interval: 6
+Result: Every 6 hours (00:00, 06:00, 12:00, 18:00...)
+```
+
+### Saturday & Sunday
+```
+Type: Weekly
+Days: 0,6
+Time: 10:00
+Result: Sat & Sun at 10 AM EAT
+```
+
+---
+
+## Schedule Actions
+
+| Action | Button | Result |
+|--------|--------|--------|
+| Create | Create Schedule | New schedule |
+| Run Now | Run Now | Execute immediately |
+| Delete | Delete | Remove schedule |
+| Check Status | None (auto) | Checks every 60 sec |
+
+---
+
+## Status Bar Info
+
+```
+✓ Running (EAT) | Active Schedules: 3 | Current Time (EAT): 14:35:22
+│               │ │                     │ │                   │
+│               │ │                     │ └─ Live clock (updates every sec)
+│               │ └─ Number of active schedules
+│               └─ Scheduler status
+```
+
+---
+
+## Tips & Tricks
+
+✅ **Check Live Clock** before creating schedules
+- Located in status bar (bottom right)
+- Shows exact current EAT time
+
+✅ **Use "Run Now"** to test schedules
+- Verifies rule & folder are working
+- Check organization history
+
+✅ **Check "Active" checkbox** to enable schedule
+- Unchecked = schedule won't run
+- Use to temporarily pause
+
+✅ **Common Mistakes**
+- ❌ Using 12-hour format (8:00 AM)
+- ✓ Use 24-hour format (20:00 for 8 PM)
+- ❌ Using text for days (Mon, Fri)
+- ✓ Use numbers (1, 5)
+- ❌ Folder doesn't exist
+- ✓ Create folder first or use [Browse]
+
+---
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| Schedule not running | Check "Active" is checked |
+| Wrong time | Check "Current Time" in status bar |
+| Invalid format | Use HH:mm (e.g., 08:00 not 8:00) |
+| Folder error | Create folder or use [Browse] |
+| "No active rules" | Create file organization rules first |
+
+---
+
+## Remember!
+
+- 📝 **Always use HH:mm format**
+  - 06:00 = 6 AM, 18:00 = 6 PM, 21:00 = 9 PM
+
+- 📅 **Days are 0-6**
+  - 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+
+- 🕐 **All times in Ethiopian Time**
+  - No conversion needed, system handles it
+
+- ✅ **Check live clock**
+  - Verify current EAT time in status bar
+
+- 🚀 **Test with "Run Now"**
+  - Make sure schedule works before relying on it
+
+---
+
+## Emergency Reference
+
+**"What time is 9 PM?"** → 21:00
+**"What time is 2 PM?"** → 14:00
+**"What time is 6 AM?"** → 06:00
+**"What day is Friday?"** → 5
+**"Weekdays?"** → 1,2,3,4,5
+**"Weekends?"** → 0,6
+
+---
+
+**Print This Cheat Sheet! →** Keep handy for quick reference 📋

@@ -158,22 +158,38 @@ namespace WpfApp1.Services
 
         /// <summary>
         /// Check if file extension matches the rule pattern
+        /// Supports both single patterns and pipe-separated patterns
         /// Examples: 
         ///   *.pdf matches .pdf, .PDF
-        ///   *.jpg matches .jpg, .jpeg
-        ///   *.png matches .png
+        ///   *.jpg|*.jpeg matches .jpg or .jpeg
+        ///   *.png|*.gif|*.bmp matches .png, .gif, or .bmp
         /// </summary>
         private bool MatchesPattern(string fileExtension, string pattern)
         {
-            // Pattern format: "*.extension"
-            // Extract extension from pattern: "*.pdf" → "pdf"
-            if (!pattern.StartsWith("*."))
+            if (string.IsNullOrWhiteSpace(pattern))
                 return false;
 
-            var patternExtension = pattern.Substring(2).ToLower(); // Remove "*." and convert to lowercase
             var fileExt = fileExtension.TrimStart('.').ToLower(); // Remove "." and convert to lowercase
 
-            return fileExt == patternExtension;
+            // Handle pipe-separated patterns: "*.pdf|*.doc|*.docx"
+            var patterns = pattern.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var singlePattern in patterns)
+            {
+                // Pattern format: "*.extension"
+                var trimmedPattern = singlePattern.Trim();
+                if (!trimmedPattern.StartsWith("*."))
+                    continue;
+
+                var patternExtension = trimmedPattern.Substring(2).ToLower(); // Remove "*." and convert to lowercase
+
+                if (fileExt == patternExtension)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

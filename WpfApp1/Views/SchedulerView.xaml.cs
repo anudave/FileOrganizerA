@@ -16,12 +16,14 @@ namespace WpfApp1.Views
         private FileOrganizerContext _dbContext;
         private SchedulerService _schedulerService;
         private FileOrganizationService _organizationService;
+        private System.Timers.Timer _clockTimer;
 
         public SchedulerView()
         {
             InitializeComponent();
             InitializeServices();
             LoadSchedules();
+            StartClockTimer();
         }
 
         private void InitializeServices()
@@ -34,7 +36,7 @@ namespace WpfApp1.Views
             if (!_schedulerService.IsRunning)
             {
                 _schedulerService.StartScheduler();
-                SchedulerStatusText.Text = "Scheduler Status: ✓ Running";
+                SchedulerStatusText.Text = "Scheduler Status: ✓ Running (EAT)";
             }
         }
 
@@ -84,13 +86,32 @@ namespace WpfApp1.Views
 
                 if (schedules.Count == 0)
                 {
-                    SchedulerStatusText.Text = "No schedules created yet";
+                    SchedulerStatusText.Text = "No schedules created yet (EAT)";
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading schedules: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void StartClockTimer()
+        {
+            _clockTimer = new System.Timers.Timer(1000); // Update every second
+            _clockTimer.Elapsed += (s, e) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    var ethiopianTime = TimeZoneService.GetEthiopianTime();
+                    CurrentTimeText.Text = ethiopianTime.ToString("HH:mm:ss");
+                });
+            };
+            _clockTimer.AutoReset = true;
+            _clockTimer.Start();
+
+            // Set initial time
+            var initialTime = TimeZoneService.GetEthiopianTime();
+            CurrentTimeText.Text = initialTime.ToString("HH:mm:ss");
         }
 
         private void CreateSchedule_Click(object sender, RoutedEventArgs e)
@@ -226,8 +247,34 @@ namespace WpfApp1.Views
             }
         }
 
+        private void BrowseFolderForSchedule_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dialog = new System.Windows.Forms.FolderBrowserDialog
+                {
+                    Description = "Select target folder for scheduled organization",
+                    ShowNewFolderButton = true
+                };
+
+                var result = dialog.ShowDialog();
+
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    FolderInput.Text = dialog.SelectedPath;
+                    SchedulerStatusText.Text = $"Target folder selected: {dialog.SelectedPath}";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error selecting folder: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         ~SchedulerView()
         {
+            _clockTimer?.Stop();
+            _clockTimer?.Dispose();
             _dbContext?.Dispose();
         }
     }

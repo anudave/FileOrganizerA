@@ -130,6 +130,47 @@ namespace WpfApp1.Data.Migrations
                     b.ToTable("CloudStorageAccounts");
                 });
 
+            modelBuilder.Entity("WpfApp1.Models.FileCategorySuggestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("ConfidenceScore")
+                        .HasColumnType("REAL");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DestinationFolder")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileExtension")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Reasons")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SuggestedCategory")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("TimesAccepted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TimesRejected")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FileCategorySuggestions");
+                });
+
             modelBuilder.Entity("WpfApp1.Models.FileOrganizationLog", b =>
                 {
                     b.Property<int>("Id")
@@ -248,6 +289,43 @@ namespace WpfApp1.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FileOrganizationSchedules");
+                });
+
+            modelBuilder.Entity("WpfApp1.Models.SmartSuggestionPattern", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("Accuracy")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CommonDestinationFolder")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Confidence")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("FilePattern")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SmartSuggestionPatterns");
                 });
 #pragma warning restore 612, 618
         }

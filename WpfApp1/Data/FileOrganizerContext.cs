@@ -10,8 +10,10 @@ namespace WpfApp1.Data
         public DbSet<FileOrganizationLog> FileOrganizationLogs { get; set; }
         public DbSet<FileOrganizationSchedule> FileOrganizationSchedules { get; set; }
         public DbSet<AppSettings> AppSettings { get; set; }
-        public DbSet<CloudStorageAccount> CloudStorageAccounts { get; set; }
-        public DbSet<CloudOrganizationLog> CloudOrganizationLogs { get; set; }
+
+        // ML/AI Suggestion Tables
+        public DbSet<FileCategorySuggestion> FileCategorySuggestions { get; set; }
+        public DbSet<SmartSuggestionPattern> SmartSuggestionPatterns { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -62,6 +64,34 @@ namespace WpfApp1.Data
             modelBuilder.Entity<FileOrganizationLog>()
                 .Property(l => l.SourceFilePath)
                 .IsRequired();
+
+            // Configure FileCategorySuggestion (ML/AI)
+            modelBuilder.Entity<FileCategorySuggestion>()
+                .HasKey(s => s.Id);
+
+            modelBuilder.Entity<FileCategorySuggestion>()
+                .Property(s => s.SuggestedCategory)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            modelBuilder.Entity<FileCategorySuggestion>()
+                .Property(s => s.FileExtension)
+                .IsRequired()
+                .HasMaxLength(10);
+
+            // Configure SmartSuggestionPattern (ML/AI)
+            modelBuilder.Entity<SmartSuggestionPattern>()
+                .HasKey(p => p.Id);
+
+            modelBuilder.Entity<SmartSuggestionPattern>()
+                .Property(p => p.FilePattern)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            modelBuilder.Entity<SmartSuggestionPattern>()
+                .Property(p => p.Category)
+                .IsRequired()
+                .HasMaxLength(50);
         }
     }
 }

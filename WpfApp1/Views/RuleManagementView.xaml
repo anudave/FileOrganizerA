@@ -9,7 +9,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -23,39 +24,122 @@
 
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="0.8*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1.2*"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- Rule Name -->
                     <StackPanel Grid.Column="0" Margin="0,0,10,0">
                         <TextBlock Text="Rule Name:" Foreground="#CCCCCC" FontSize="12" Margin="0,0,0,5"/>
-                        <TextBox x:Name="RuleNameInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1"/>
+                        <TextBox x:Name="RuleNameInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Height="35"/>
                     </StackPanel>
 
-                    <!-- File Pattern -->
+                    <!-- Category Dropdown -->
                     <StackPanel Grid.Column="1" Margin="10,0,10,0">
-                        <TextBlock Text="File Pattern:" Foreground="#CCCCCC" FontSize="12" Margin="0,0,0,5"/>
-                        <TextBox x:Name="FilePatternInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Text="*.pdf"/>
+                        <TextBlock Text="Category:" Foreground="#CCCCCC" FontSize="12" Margin="0,0,0,5"/>
+                        <ComboBox x:Name="FilePatternCombo" Height="35" IsEditable="False">
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Background" Value="#3A3A3A"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="Padding" Value="8"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="#FF6B35"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#FF8C56"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                            <ComboBoxItem>📄 Documents</ComboBoxItem>
+                            <ComboBoxItem>🖼️ Images</ComboBoxItem>
+                            <ComboBoxItem>🎬 Videos</ComboBoxItem>
+                            <ComboBoxItem>🎵 Audio</ComboBoxItem>
+                            <ComboBoxItem>📦 Archives</ComboBoxItem>
+                            <ComboBoxItem>💻 Code</ComboBoxItem>
+                            <ComboBoxItem>⚙️ Executables</ComboBoxItem>
+                            <ComboBoxItem>📋 Spreadsheets</ComboBoxItem>
+                            <ComboBoxItem>📊 Presentations</ComboBoxItem>
+                            <ComboBoxItem>🌐 Web Files</ComboBoxItem>
+                            <ComboBoxItem>📜 Text Files</ComboBoxItem>
+                            <ComboBoxItem>🔒 Compressed</ComboBoxItem>
+                            <ComboBoxItem>⭐ Other</ComboBoxItem>
+                        </ComboBox>
                     </StackPanel>
 
-                    <!-- Destination Folder -->
+                    <!-- Destination Folder with Browse Button -->
                     <StackPanel Grid.Column="2" Margin="10,0,10,0">
                         <TextBlock Text="Destination Folder:" Foreground="#CCCCCC" FontSize="12" Margin="0,0,0,5"/>
-                        <TextBox x:Name="DestinationFolderInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1"/>
+                        <TextBox x:Name="DestinationFolderInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Height="35" IsReadOnly="True"/>
                     </StackPanel>
 
-                    <!-- Add Button -->
-                    <Button Grid.Column="3" Content="+ Add Rule" Background="#FF6B35" Foreground="White" Padding="15,8" Margin="10,0,0,0" VerticalAlignment="Bottom" Height="35" Click="AddRule_Click" FontWeight="Bold"/>
+                    <!-- Browse Folder Button -->
+                    <Button Grid.Column="3" Content="📁 Browse" Background="#4CAF50" Foreground="White" Padding="12,8" Margin="10,0,5,0" VerticalAlignment="Bottom" Height="35" Click="BrowseDestinationFolder_Click" FontWeight="Bold"/>
+
+                    <!-- Add Rule Button -->
+                    <Button Grid.Column="4" Content="+ Add Rule" Background="#FF6B35" Foreground="White" Padding="15,8" Margin="5,0,0,0" VerticalAlignment="Bottom" Height="35" Click="AddRule_Click" FontWeight="Bold"/>
                 </Grid>
             </StackPanel>
         </Border>
 
-        <!-- Rules List -->
-        <DataGrid Grid.Row="2" x:Name="RulesDataGrid" Background="#2B2B2B" Foreground="White" Margin="20" 
+        <!-- AI Smart Suggestions Section -->
+        <Border Grid.Row="2" Background="#1E4620" Margin="20,10,20,10" Padding="15" CornerRadius="5" BorderBrush="#4CAF50" BorderThickness="2">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="🤖 AI Smart Suggestions" Foreground="#4CAF50" FontSize="14" FontWeight="Bold"/>
+                        <TextBlock Text="Let AI analyze your files and suggest intelligent organization rules" Foreground="#90EE90" FontSize="11" Margin="0,5,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button x:Name="SelectFolderForSuggestionsBtn" Content="📁 Select Folder" Background="#4CAF50" Foreground="White" Padding="12,8" Margin="0,0,10,0" Click="SelectFolderForSuggestions_Click" FontWeight="Bold"/>
+                        <Button x:Name="GetSuggestionsBtn" Content="⚡ Get Smart Suggestions" Background="#4CAF50" Foreground="White" Padding="12,8" Click="GetSmartSuggestions_Click" FontWeight="Bold" IsEnabled="False"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Folder path display -->
+                <TextBlock x:Name="SelectedFolderDisplay" Text="No folder selected" Foreground="#90EE90" FontSize="10" Margin="0,10,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Smart Suggestions Results Grid -->
+        <DataGrid Grid.Row="3" x:Name="SuggestionsDataGrid" Background="#2B2B2B" Foreground="White" Margin="20" 
                   AutoGenerateColumns="False" RowBackground="#3B3B3B" 
+                  AlternatingRowBackground="#454545" BorderBrush="#4CAF50" BorderThickness="1" Visibility="Collapsed">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="200" Foreground="White"/>
+                <DataGridTextColumn Header="Suggested Category" Binding="{Binding Suggestions[0].SuggestedCategory}" Width="120" Foreground="White"/>
+                <DataGridTextColumn Header="Destination" Binding="{Binding Suggestions[0].DestinationFolder}" Width="*" Foreground="White"/>
+                <DataGridTextColumn Header="Confidence (%)" Binding="{Binding Suggestions[0].ConfidenceScore}" Width="100" Foreground="#4CAF50" FontWeight="Bold"/>
+                <DataGridTextColumn Header="Reasons" Binding="{Binding TopSuggestionReason}" Width="200" Foreground="White"/>
+                <DataGridTemplateColumn Header="Action" Width="120">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="✓ Accept" Background="#4CAF50" Foreground="White" Padding="8,4" Margin="0,0,5,0" Click="AcceptSuggestion_Click" Tag="{Binding}"/>
+                                <Button Content="✗ Reject" Background="#F44336" Foreground="White" Padding="8,4" Click="RejectSuggestion_Click" Tag="{Binding}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Rules List -->
+        <DataGrid Grid.Row="3" x:Name="RulesDataGrid" Background="#2B2B2B" Foreground="White" Margin="20" 
+                  AutoGenerateColumns="False" RowBackground="#3B3B3B"
                   AlternatingRowBackground="#454545" BorderBrush="#FF6B35" BorderThickness="1">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50" IsReadOnly="True" Foreground="White"/>
@@ -78,7 +162,7 @@
         </DataGrid>
 
         <!-- Status Bar -->
-        <Border Grid.Row="3" Background="#1E1E1E" Padding="20,10" BorderBrush="#FF6B35" BorderThickness="0,1,0,0">
+        <Border Grid.Row="4" Background="#1E1E1E" Padding="20,10" BorderBrush="#FF6B35" BorderThickness="0,1,0,0">
             <TextBlock x:Name="StatusText" Foreground="#CCCCCC" FontSize="12" Text="Ready"/>
         </Border>
     </Grid>
