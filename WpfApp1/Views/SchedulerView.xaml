@@ -43,7 +43,24 @@
                     <!-- Schedule Type -->
                     <StackPanel Grid.Column="1" Grid.Row="0" Margin="10,0,10,0">
                         <TextBlock Text="Type:" Foreground="#CCCCCC" FontSize="11"/>
-                        <ComboBox x:Name="ScheduleTypeCombo" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Height="30" Margin="0,5,0,0">
+                        <ComboBox x:Name="ScheduleTypeCombo" Height="30" Margin="0,5,0,0">
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Background" Value="#3A3A3A"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="Padding" Value="8"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="#FF6B35"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#FF8C56"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
                             <ComboBoxItem>Daily</ComboBoxItem>
                             <ComboBoxItem>Weekly</ComboBoxItem>
                             <ComboBoxItem>Monthly</ComboBoxItem>
@@ -53,14 +70,21 @@
 
                     <!-- Time -->
                     <StackPanel Grid.Column="2" Grid.Row="0" Margin="10,0,10,0">
-                        <TextBlock Text="Time (HH:mm):" Foreground="#CCCCCC" FontSize="11"/>
-                        <TextBox x:Name="TimeInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Height="30" Margin="0,5,0,0" Text="21:00"/>
+                        <TextBlock Text="Time (HH:mm EAT):" Foreground="#CCCCCC" FontSize="11"/>
+                        <TextBox x:Name="TimeInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Height="30" Margin="0,5,0,0" Text="21:00" ToolTip="Ethiopian Time (UTC+3). Example: 21:00 = 9:00 PM EAT"/>
                     </StackPanel>
 
-                    <!-- Target Folder (Drag & Drop enabled) -->
+                    <!-- Target Folder (Drag & Drop + Browse Button) -->
                     <StackPanel Grid.Column="3" Grid.Row="0" Margin="10,0,10,0">
-                        <TextBlock Text="Target Folder (Drag &amp; Drop):" Foreground="#CCCCCC" FontSize="11"/>
-                        <TextBox x:Name="FolderInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Height="30" Margin="0,5,0,0" AllowDrop="True" DragOver="FolderInput_DragOver" Drop="FolderInput_Drop" TextWrapping="NoWrap"/>
+                        <TextBlock Text="Target Folder:" Foreground="#CCCCCC" FontSize="11"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" x:Name="FolderInput" Background="#2B2B2B" Foreground="White" Padding="8" BorderBrush="#FF6B35" BorderThickness="1" Height="30" Margin="0,5,0,0" AllowDrop="True" DragOver="FolderInput_DragOver" Drop="FolderInput_Drop" TextWrapping="NoWrap" IsReadOnly="True"/>
+                            <Button Grid.Column="1" Content="📁 Browse" Background="#4CAF50" Foreground="White" Padding="8,0" Margin="5,5,0,0" Height="30" Click="BrowseFolderForSchedule_Click" FontWeight="Bold" MinWidth="100"/>
+                        </Grid>
                     </StackPanel>
 
                     <!-- Create Button -->
@@ -68,10 +92,13 @@
 
                     <!-- Additional Options Row -->
                     <StackPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="5" Orientation="Horizontal" Margin="0,10,0,0">
-                        <TextBlock Text="Days (Weekly - comma separated 0-6):" Foreground="#CCCCCC" FontSize="10" VerticalAlignment="Center"/>
-                        <TextBox x:Name="DaysInput" Background="#2B2B2B" Foreground="White" Padding="5" BorderBrush="#FF6B35" BorderThickness="1" Width="100" Margin="10,0,20,0" Height="25" ToolTip="0=Sunday, 1=Monday, etc."/>
-                        <TextBlock Text="Interval (Custom - hours):" Foreground="#CCCCCC" FontSize="10" VerticalAlignment="Center"/>
-                        <TextBox x:Name="IntervalInput" Background="#2B2B2B" Foreground="White" Padding="5" BorderBrush="#FF6B35" BorderThickness="1" Width="60" Margin="10,0,0,0" Height="25" Text="6"/>
+                        <TextBlock Text="Days (Weekly - comma separated 0-6):" Foreground="#CCCCCC" FontSize="10" VerticalAlignment="Center" ToolTip="0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday"/>
+                        <TextBox x:Name="DaysInput" Background="#2B2B2B" Foreground="White" Padding="5" BorderBrush="#FF6B35" BorderThickness="1" Width="100" Margin="10,0,20,0" Height="25" ToolTip="Example: 1,3,5 for Mon/Wed/Fri"/>
+                        <TextBlock Text="Interval (Custom - hours):" Foreground="#CCCCCC" FontSize="10" VerticalAlignment="Center" ToolTip="How often to run (in hours)"/>
+                        <TextBox x:Name="IntervalInput" Background="#2B2B2B" Foreground="White" Padding="5" BorderBrush="#FF6B35" BorderThickness="1" Width="60" Margin="10,0,0,0" Height="25" Text="6" ToolTip="Example: 6 = every 6 hours"/>
+                        <TextBlock Text=" | " Foreground="#666666" Margin="20,0"/>
+                        <TextBlock Text="EAT Format Examples:" Foreground="#FFB347" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock Text="06:00 (6AM) • 12:00 (noon) • 18:00 (6PM) • 21:00 (9PM)" Foreground="#99CCFF" FontSize="9" VerticalAlignment="Center" Margin="5,0,0,0" ToolTip="Ethiopian Time is UTC+3"/>
                     </StackPanel>
                 </Grid>
             </StackPanel>
@@ -134,6 +161,9 @@
                 <TextBlock x:Name="SchedulerStatusText" Foreground="#CCCCCC" FontSize="11" Text="Scheduler Status: Ready"/>
                 <TextBlock Text=" | " Foreground="#666666" Margin="10,0"/>
                 <TextBlock x:Name="ScheduleCountText" Foreground="#CCCCCC" FontSize="11" Text="Active Schedules: 0"/>
+                <TextBlock Text=" | " Foreground="#666666" Margin="10,0"/>
+                <TextBlock Text="Current Time (EAT): " Foreground="#CCCCCC" FontSize="11"/>
+                <TextBlock x:Name="CurrentTimeText" Foreground="#4CAF50" FontSize="11" FontWeight="Bold" Text="Loading..."/>
             </StackPanel>
         </Border>
     </Grid>

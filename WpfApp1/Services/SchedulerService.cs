@@ -82,11 +82,11 @@ namespace WpfApp1.Services
         }
 
         /// <summary>
-        /// Determine if schedule should run at current time
+        /// Determine if schedule should run at current time (in Ethiopian Time)
         /// </summary>
         private bool ShouldRunNow(FileOrganizationSchedule schedule)
         {
-            var now = DateTime.Now;
+            var now = TimeZoneService.GetEthiopianTime();
 
             switch (schedule.ScheduleType.ToLower())
             {
@@ -197,7 +197,7 @@ namespace WpfApp1.Services
         }
 
         /// <summary>
-        /// Execute a schedule (run file organization)
+        /// Execute a schedule (run file organization) using Ethiopian Time
         /// </summary>
         private void ExecuteSchedule(FileOrganizationSchedule schedule)
         {
@@ -205,8 +205,8 @@ namespace WpfApp1.Services
             {
                 var result = _organizationService.OrganizeFiles(schedule.TargetFolderPath, moveFiles: true);
 
-                // Update schedule
-                schedule.LastRunTime = DateTime.Now;
+                // Update schedule with current Ethiopian Time
+                schedule.LastRunTime = TimeZoneService.GetEthiopianTime();
                 schedule.LastRunStatus = "Success";
                 schedule.LastRunMessage = $"Organized {result.SuccessCount} files, skipped {result.SkippedCount}, failed {result.FailureCount}";
                 schedule.NextRunTime = CalculateNextRunTime(schedule);
@@ -216,7 +216,7 @@ namespace WpfApp1.Services
             }
             catch (Exception ex)
             {
-                schedule.LastRunTime = DateTime.Now;
+                schedule.LastRunTime = TimeZoneService.GetEthiopianTime();
                 schedule.LastRunStatus = "Failed";
                 schedule.LastRunMessage = $"Error: {ex.Message}";
 
@@ -226,13 +226,13 @@ namespace WpfApp1.Services
         }
 
         /// <summary>
-        /// Calculate next run time for a schedule
+        /// Calculate next run time for a schedule (using Ethiopian Time)
         /// </summary>
         private DateTime? CalculateNextRunTime(FileOrganizationSchedule schedule)
         {
             try
             {
-                var now = DateTime.Now;
+                var now = TimeZoneService.GetEthiopianTime();
 
                 switch (schedule.ScheduleType.ToLower())
                 {
