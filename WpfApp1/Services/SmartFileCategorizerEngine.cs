@@ -194,6 +194,7 @@ namespace WpfApp1.Services
 
         /// <summary>
         /// Analyzes existing file organization rules to learn patterns
+        /// FIXED: Now uses CATEGORIES instead of file extensions
         /// </summary>
         private List<SmartSuggestionPattern> AnalyzeExistingRules()
         {
@@ -206,39 +207,50 @@ namespace WpfApp1.Services
                 // If NO RULES exist, create DEFAULT PATTERNS from file type mappings
                 if (rules.Count == 0)
                 {
-                    // Provide default suggestions based on file type categories
+                    // Create patterns for CATEGORIES (Document, Image, Video, etc.)
                     foreach (var mapping in _fileTypeMappings)
                     {
-                        foreach (var extension in mapping.Value)
+                        var categoryPattern = new SmartSuggestionPattern
                         {
-                            var pattern = new SmartSuggestionPattern
-                            {
-                                FilePattern = extension,
-                                Category = mapping.Key,
-                                CommonDestinationFolder = mapping.Key, // Default folder = category name
-                                Frequency = 1,
-                                Accuracy = 0.75, // Default accuracy for built-in patterns
-                                Confidence = 70 // Built-in patterns get 70% confidence
-                            };
-                            patterns.Add(pattern);
-                        }
+                            FilePattern = mapping.Key, // Store category name instead of extension
+                            Category = mapping.Key,     // Category = category name
+                            CommonDestinationFolder = mapping.Key,
+                            Frequency = 1,
+                            Accuracy = 0.75,
+                            Confidence = 70
+                        };
+                        patterns.Add(categoryPattern);
                     }
                     return patterns;
                 }
 
-                // Group rules by file pattern to learn common organization
-                var groupedRules = rules.GroupBy(r => r.FilePattern);
+                // Group rules by CATEGORY (not file pattern)
+                // Extract category from rule name or use rule name as category
+                var groupedByCategory = new Dictionary<string, List<FileOrganizationRule>>();
 
-                foreach (var group in groupedRules)
+                foreach (var rule in rules)
+                {
+                    // Try to determine category from rule name or use rule name as category
+                    var category = ExtractCategoryFromRule(rule.RuleName, rule.FilePattern);
+
+                    if (!groupedByCategory.ContainsKey(category))
+                    {
+                        groupedByCategory[category] = new List<FileOrganizationRule>();
+                    }
+                    groupedByCategory[category].Add(rule);
+                }
+
+                // Create patterns for each category
+                foreach (var categoryGroup in groupedByCategory)
                 {
                     var pattern = new SmartSuggestionPattern
                     {
-                        FilePattern = group.Key,
-                        Category = DetermineFileTypeCategory(group.Key),
-                        CommonDestinationFolder = group.First().DestinationFolder,
-                        Frequency = group.Count(),
-                        Accuracy = 0.8, // Default accuracy, updated based on feedback
-                        Confidence = CalculateConfidence(group.Count())
+                        FilePattern = categoryGroup.Key,        // Category name (e.g., "Documents", "Images")
+                        Category = categoryGroup.Key,            // Category name
+                        CommonDestinationFolder = categoryGroup.Value.First().DestinationFolder,
+                        Frequency = categoryGroup.Value.Count(),
+                        Accuracy = 0.8,
+                        Confidence = CalculateConfidence(categoryGroup.Value.Count())
                     };
 
                     patterns.Add(pattern);
@@ -469,5 +481,33 @@ namespace WpfApp1.Services
                 System.Diagnostics.Debug.WriteLine($"Error recording feedback: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Extract category from rule name or file pattern
+        /// Maps rule names to standard categories
+        /// </summary>
+        private string ExtractCategoryFromRule(string ruleName, string filePattern)
+        {
+            // Normalize to lowercase for comparison
+            var lower = ruleName.ToLower();
+
+            // Direct category mapping
+            if (lower.Contains("document")) return "Documents";
+            if (lower.Contains("image") || lower.Contains("photo") || lower.Contains("picture")) return "Images";
+            if (lower.Contains("video") || lower.Contains("movie")) return "Videos";
+            if (lower.Contains("audio") || lower.Contains("music") || lower.Contains("sound")) return "Audio";
+            if (lower.Contains("archive") || lower.Contains("compress") || lower.Contains("zip")) return "Archives";
+            if (lower.Contains("code") || lower.Contains("source")) return "Code";
+            if (lower.Contains("executable") || lower.Contains("program") || lower.Contains("app")) return "Executables";
+            if (lower.Contains("spreadsheet") || lower.Contains("excel") || lower.Contains("csv")) return "Spreadsheets";
+
+            // Check if rule name itself is a category
+            if (_fileTypeMappings.ContainsKey(ruleName))
+                return ruleName;
+
+            // Default to rule name as category
+            return ruleName;
+        }
     }
 }
+
