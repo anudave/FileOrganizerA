@@ -284,17 +284,33 @@ namespace WpfApp1.Services
         {
             var scores = new Dictionary<string, double>();
 
+            // If no patterns, use default high confidence for recognized file types
+            if (!patterns.Any())
+            {
+                // File type is recognized in built-in mappings
+                if (features.FileTypeCategory != "Other")
+                {
+                    scores[features.FileTypeCategory] = 85.0;  // High confidence for known types
+                }
+                else
+                {
+                    scores["Other"] = 50.0;  // Low confidence for unknown types
+                }
+                return scores;
+            }
+
             // Score 1: File extension match (60% weight)
             var extensionScore = patterns
                 .Where(p => p.FilePattern == features.FileExtension)
                 .Select(p => p.Confidence)
+                .DefaultIfEmpty(0)
                 .FirstOrDefault();
 
             // Score 2: File type category match (25% weight)
             var categoryScore = patterns
                 .Where(p => p.Category == features.FileTypeCategory)
                 .Select(p => p.Confidence)
-                .DefaultIfEmpty(70)
+                .DefaultIfEmpty(75)
                 .Average();
 
             // Score 3: Keyword matching (15% weight)
@@ -338,6 +354,7 @@ namespace WpfApp1.Services
 
         /// <summary>
         /// Generates ranked list of suggestions based on scores
+        /// FIXED: Now matches by CATEGORY instead of file extension
         /// </summary>
         private List<FileCategorySuggestion> GenerateSuggestions(
             Dictionary<string, double> scores,
@@ -345,25 +362,28 @@ namespace WpfApp1.Services
         {
             var suggestions = new List<FileCategorySuggestion>();
 
-            // Get the rules that match this file
+            // Get the rules that match this file's CATEGORY
             var matchingRules = _dbContext.FileOrganizationRules
-                .Where(r => r.FilePattern == features.FileExtension)
+                .Where(r => r.RuleName.ToLower().Contains(features.FileTypeCategory.ToLower()) ||
+                           r.DestinationFolder.ToLower().Contains(features.FileTypeCategory.ToLower()))
                 .ToList();
 
+            // If no rules by category name, try to match by file pattern containing the file's category extensions
             if (!matchingRules.Any())
             {
-                // No exact match, suggest based on category
+                // Check if any rule's file pattern contains extensions for this category
+                var categoryExtensions = GetExtensionsForCategory(features.FileTypeCategory);
                 matchingRules = _dbContext.FileOrganizationRules
-                    .Where(r => DetermineFileTypeCategory(r.FilePattern) == features.FileTypeCategory)
+                    .Where(r => categoryExtensions.Any(ext => r.FilePattern.ToLower().Contains(ext.ToLower())))
                     .ToList();
             }
 
-            // If STILL no rules, generate default suggestion
+            // If STILL no rules, generate default suggestion based on built-in categories
             if (!matchingRules.Any())
             {
                 var confidence = scores.ContainsKey(features.FileTypeCategory) 
                     ? scores[features.FileTypeCategory] 
-                    : 70; // Default confidence when no user rules exist
+                    : 75; // Default confidence when no user rules exist
 
                 var reasons = GenerateDefaultReasons(features);
 
@@ -371,7 +391,7 @@ namespace WpfApp1.Services
                 {
                     SuggestedCategory = features.FileTypeCategory,
                     DestinationFolder = features.FileTypeCategory, // Suggest folder = category
-                    ConfidenceScore = confidence,
+                    ConfidenceScore = Math.Min(100, confidence),
                     Reasons = reasons,
                     FileExtension = features.FileExtension,
                     TimesAccepted = 0,
@@ -382,11 +402,12 @@ namespace WpfApp1.Services
                 return suggestions;
             }
 
+            // Generate suggestions from matching rules
             foreach (var rule in matchingRules)
             {
                 var confidence = scores.ContainsKey(features.FileTypeCategory) 
                     ? scores[features.FileTypeCategory] 
-                    : 65;
+                    : 75;
 
                 var reasons = GenerateReasons(features, rule);
 
@@ -394,7 +415,7 @@ namespace WpfApp1.Services
                 {
                     SuggestedCategory = features.FileTypeCategory,
                     DestinationFolder = rule.DestinationFolder,
-                    ConfidenceScore = confidence,
+                    ConfidenceScore = Math.Min(100, confidence),
                     Reasons = reasons,
                     FileExtension = features.FileExtension,
                     TimesAccepted = 0,
@@ -507,6 +528,20 @@ namespace WpfApp1.Services
 
             // Default to rule name as category
             return ruleName;
+        }
+
+        /// <summary>
+        /// Get all file extensions for a specific category
+        /// </summary>
+        private List<string> GetExtensionsForCategory(string category)
+        {
+            if (_fileTypeMappings.ContainsKey(category))
+            {
+                return _fileTypeMappings[category];
+            }
+
+            // If category not found in mappings, return empty list
+            return new List<string>();
         }
     }
 }
