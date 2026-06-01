@@ -9,14 +9,58 @@ namespace WpfApp1.Services
     {
         /// <summary>
         /// Ethiopian Time TimeZone (UTC+3)
+        /// Tries multiple timezone ID names for cross-platform compatibility
         /// </summary>
-        private static readonly TimeZoneInfo EthiopianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("East Africa Standard Time");
+        private static readonly TimeZoneInfo EthiopianTimeZone = GetEthiopianTimeZone();
+
+        private static TimeZoneInfo GetEthiopianTimeZone()
+        {
+            // Try common timezone IDs for Ethiopian Time (UTC+3)
+            string[] timezoneIds = new[]
+            {
+                "East Africa Standard Time",  // Windows standard ID
+                "Africa/Addis_Ababa",         // IANA standard ID
+                "Africa/Nairobi",             // Alternative UTC+3
+                "Africa/Cairo",               // Alternative UTC+3 (fallback)
+            };
+
+            foreach (var tzId in timezoneIds)
+            {
+                try
+                {
+                    return TimeZoneInfo.FindSystemTimeZoneById(tzId);
+                }
+                catch (TimeZoneNotFoundException)
+                {
+                    // Try next ID
+                }
+            }
+
+            // Fallback: Create UTC+3 manually if no standard timezone found
+            try
+            {
+                return TimeZoneInfo.CreateCustomTimeZone("Ethiopia Standard Time", 
+                    new TimeSpan(3, 0, 0), 
+                    "EAT", 
+                    "Ethiopian Time");
+            }
+            catch
+            {
+                // Last resort: return UTC and adjust manually
+                return TimeZoneInfo.Utc;
+            }
+        }
 
         /// <summary>
         /// Get current time in Ethiopian Time
         /// </summary>
         public static DateTime GetEthiopianTime()
         {
+            if (EthiopianTimeZone.Id == "UTC")
+            {
+                // Fallback: If UTC was used as last resort, manually add 3 hours
+                return DateTime.UtcNow.AddHours(3);
+            }
             return TimeZoneInfo.ConvertTime(DateTime.Now, EthiopianTimeZone);
         }
 
