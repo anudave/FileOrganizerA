@@ -55,7 +55,8 @@
             <StackPanel>
                 <TextBlock Text="File Organization" Foreground="White" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
                 <StackPanel Orientation="Horizontal">
-                    <Button x:Name="OrganizeBtn" Content="▶ Start Organization" Background="#4CAF50" Foreground="White" Padding="20,10" Click="OrganizeFiles_Click" FontWeight="Bold" Width="200" Height="40" IsEnabled="False"/>
+                    <Button x:Name="PreviewBtn" Content="👁️ Preview" Background="#FFC107" Foreground="Black" Padding="20,10" Click="PreviewFiles_Click" FontWeight="Bold" Width="150" Height="40" IsEnabled="False"/>
+                    <Button x:Name="OrganizeBtn" Content="▶ Start Organization" Background="#4CAF50" Foreground="White" Padding="20,10" Click="OrganizeFiles_Click" FontWeight="Bold" Width="200" Height="40" IsEnabled="False" Margin="10,0,0,0"/>
                     <Button Content="🔄 Refresh" Background="#2196F3" Foreground="White" Padding="15,10" Click="RefreshFolderStats_Click" Margin="10,0,0,0" Width="120" Height="40" FontWeight="Bold"/>
                     <TextBlock x:Name="StatusText" Text="Ready" Foreground="#CCCCCC" VerticalAlignment="Center" Margin="20,0,0,0"/>
                 </StackPanel>
@@ -66,7 +67,15 @@
         <Border Grid.Row="3" Background="#3B3B3B" Margin="20,10,20,20" Padding="15" CornerRadius="5">
             <StackPanel>
                 <TextBlock Text="Organization Report" Foreground="#FF6B35" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                <ScrollViewer Height="300" Background="#2B2B2B" Padding="10" BorderBrush="#FF6B35" BorderThickness="1">
+                <ScrollViewer Height="300" 
+                              Background="#2B2B2B" 
+                              Padding="10" 
+                              BorderBrush="#FF6B35" 
+                              BorderThickness="1"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Auto"
+                              PanningMode="VerticalFirst"
+                              PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
                     <TextBlock x:Name="ResultsText" 
                                Foreground="#00FF00" 
                                FontFamily="Courier New" 
