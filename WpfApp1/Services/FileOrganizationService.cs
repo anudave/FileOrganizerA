@@ -11,6 +11,27 @@ namespace WpfApp1.Services
     {
         private readonly FileOrganizerContext _dbContext;
 
+        public class PreviewItem
+        {
+            public string FileName { get; set; }
+            public string SourcePath { get; set; }
+            public string DestinationPath { get; set; }
+            public string Status { get; set; } // "Will Organize", "Will Skip", "Will Fail"
+            public string Reason { get; set; }
+            public string FileExtension { get; set; }
+            public long FileSizeBytes { get; set; }
+        }
+
+        public class PreviewResult
+        {
+            public List<PreviewItem> OrganizeItems { get; set; } = new();
+            public List<PreviewItem> SkipItems { get; set; } = new();
+            public List<PreviewItem> FailureItems { get; set; } = new();
+            public List<string> Messages { get; set; } = new();
+            public bool IsValid { get; set; } = true;
+            public string ValidationMessage { get; set; }
+        }
+
         public class OrganizationResult
         {
             public int SuccessCount { get; set; }
@@ -22,6 +43,124 @@ namespace WpfApp1.Services
         public FileOrganizationService(FileOrganizerContext dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        /// <summary>
+        /// Preview mode - shows what WILL happen without moving files
+        /// </summary>
+        public PreviewResult PreviewOrganization(string sourceFolder)
+        {
+            var preview = new PreviewResult();
+
+            try
+            {
+                // Step 1: Validate source folder
+                if (!Directory.Exists(sourceFolder))
+                {
+                    preview.IsValid = false;
+                    preview.ValidationMessage = $"Source folder does not exist: {sourceFolder}";
+                    return preview;
+                }
+
+                preview.Messages.Add($"Previewing file organization for: {sourceFolder}");
+
+                // Step 2: Get all files
+                var files = GetAllFilesInFolder(sourceFolder);
+                preview.Messages.Add($"Found {files.Count} files to preview");
+
+                if (files.Count == 0)
+                {
+                    preview.IsValid = false;
+                    preview.ValidationMessage = "No files found in the selected folder";
+                    return preview;
+                }
+
+                // Step 3: Get all active rules
+                var rules = _dbContext.FileOrganizationRules
+                    .Where(r => r.IsActive)
+                    .ToList();
+
+                preview.Messages.Add($"Loaded {rules.Count} active rules");
+
+                if (rules.Count == 0)
+                {
+                    preview.IsValid = false;
+                    preview.ValidationMessage = "No active rules found. Please create rules first.";
+                    return preview;
+                }
+
+                // Step 4: Analyze each file
+                foreach (var file in files)
+                {
+                    try
+                    {
+                        var fileInfo = new FileInfo(file);
+                        var extension = fileInfo.Extension.ToLower();
+                        var matchingRule = FindMatchingRule(extension, rules);
+
+                        var previewItem = new PreviewItem
+                        {
+                            FileName = fileInfo.Name,
+                            SourcePath = file,
+                            FileExtension = extension,
+                            FileSizeBytes = fileInfo.Length
+                        };
+
+                        if (matchingRule == null)
+                        {
+                            // Will skip - no matching rule
+                            previewItem.Status = "Will Skip";
+                            previewItem.Reason = "No matching rule for this file type";
+                            previewItem.DestinationPath = "N/A";
+                            preview.SkipItems.Add(previewItem);
+                        }
+                        else
+                        {
+                            // Will organize
+                            var destinationPath = Path.Combine(matchingRule.DestinationFolder, fileInfo.Name);
+
+                            // Check for conflicts
+                            if (File.Exists(destinationPath))
+                            {
+                                destinationPath = GetUniqueFileName(destinationPath);
+                            }
+
+                            previewItem.Status = "Will Organize";
+                            previewItem.Reason = $"Matches rule: {matchingRule.RuleName}";
+                            previewItem.DestinationPath = destinationPath;
+                            preview.OrganizeItems.Add(previewItem);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        var previewItem = new PreviewItem
+                        {
+                            FileName = Path.GetFileName(file),
+                            SourcePath = file,
+                            Status = "Will Fail",
+                            Reason = $"Error: {ex.Message}",
+                            DestinationPath = "N/A"
+                        };
+                        preview.FailureItems.Add(previewItem);
+                    }
+                }
+
+                // Summary
+                preview.Messages.Add("");
+                preview.Messages.Add("═══════════════════════════════════");
+                preview.Messages.Add($"Will Organize: {preview.OrganizeItems.Count} files");
+                preview.Messages.Add($"Will Skip: {preview.SkipItems.Count} files");
+                preview.Messages.Add($"Will Fail: {preview.FailureItems.Count} files");
+                preview.Messages.Add("═══════════════════════════════════");
+
+                return preview;
+            }
+            catch (Exception ex)
+            {
+                preview.IsValid = false;
+                preview.ValidationMessage = $"Error during preview: {ex.Message}";
+                return preview;
+            }
         }
 
         /// <summary>
