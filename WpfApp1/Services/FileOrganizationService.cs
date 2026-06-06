@@ -89,13 +89,42 @@ namespace WpfApp1.Services
                     return preview;
                 }
 
-                // Step 4: Analyze each file
+                // Step 4: Get active exclusion patterns
+                var exclusionPatterns = _dbContext.ExclusionPatterns
+                    .Where(e => e.IsActive)
+                    .ToList();
+
+                if (exclusionPatterns.Count > 0)
+                {
+                    preview.Messages.Add($"Loaded {exclusionPatterns.Count} active exclusion patterns");
+                }
+
+                // Step 5: Analyze each file
                 foreach (var file in files)
                 {
                     try
                     {
                         var fileInfo = new FileInfo(file);
+                        var fileName = fileInfo.Name;
                         var extension = fileInfo.Extension.ToLower();
+
+                        // Check if file is excluded
+                        if (IsFileExcluded(fileName, exclusionPatterns))
+                        {
+                            var excludedItem = new PreviewItem
+                            {
+                                FileName = fileName,
+                                SourcePath = file,
+                                FileExtension = extension,
+                                FileSizeBytes = fileInfo.Length,
+                                Status = "Will Skip",
+                                Reason = "File matches exclusion pattern",
+                                DestinationPath = "N/A"
+                            };
+                            preview.SkipItems.Add(excludedItem);
+                            continue;
+                        }
+
                         var matchingRule = FindMatchingRule(extension, rules);
 
                         var previewItem = new PreviewItem
@@ -199,13 +228,33 @@ namespace WpfApp1.Services
                     return result;
                 }
 
+                // Get active exclusion patterns
+                var exclusionPatterns = _dbContext.ExclusionPatterns
+                    .Where(e => e.IsActive)
+                    .ToList();
+
+                if (exclusionPatterns.Count > 0)
+                {
+                    result.Messages.Add($"Loaded {exclusionPatterns.Count} active exclusion patterns");
+                }
+
                 // Step 4: Process each file
                 foreach (var file in files)
                 {
                     try
                     {
                         var fileInfo = new FileInfo(file);
+                        var fileName = fileInfo.Name;
                         var extension = fileInfo.Extension.ToLower();
+
+                        // Check if file is excluded
+                        if (IsFileExcluded(fileName, exclusionPatterns))
+                        {
+                            result.SkippedCount++;
+                            LogFileOrganization(file, null, "Skipped", "File matches exclusion pattern");
+                            result.Messages.Add($"⊘ EXCLUDED: {fileName} (matches exclusion pattern)");
+                            continue;
+                        }
 
                         // Find matching rule
                         var matchingRule = FindMatchingRule(extension, rules);
@@ -475,6 +524,71 @@ namespace WpfApp1.Services
             {
                 var extension = Path.GetExtension(fileName);
                 return MatchesPattern(extension, rule.FilePattern);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Check if file matches any exclusion pattern
+        /// </summary>
+        private bool IsFileExcluded(string fileName, List<ExclusionPattern> exclusionPatterns)
+        {
+            if (exclusionPatterns == null || exclusionPatterns.Count == 0)
+                return false;
+
+            var lowerFileName = fileName.ToLower();
+
+            foreach (var pattern in exclusionPatterns)
+            {
+                if (MatchesExclusionPattern(lowerFileName, pattern.Pattern.ToLower()))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if filename matches an exclusion pattern
+        /// </summary>
+        private bool MatchesExclusionPattern(string fileName, string pattern)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(fileName) || string.IsNullOrWhiteSpace(pattern))
+                    return false;
+
+                // Handle pipe-separated patterns
+                var patterns = pattern.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var singlePattern in patterns)
+                {
+                    var trimmedPattern = singlePattern.Trim();
+
+                    // Handle wildcard patterns (*.tmp, *.~*)
+                    if (trimmedPattern.StartsWith("*."))
+                    {
+                        var extension = trimmedPattern.Substring(1);
+                        if (fileName.EndsWith(extension))
+                            return true;
+                    }
+                    // Handle exact filename matches
+                    else if (fileName == trimmedPattern || fileName.EndsWith("\\" + trimmedPattern))
+                    {
+                        return true;
+                    }
+                    // Handle wildcard patterns with asterisks in middle
+                    else if (trimmedPattern.Contains("*"))
+                    {
+                        var regexPattern = "^" + System.Text.RegularExpressions.Regex.Escape(trimmedPattern).Replace("\\*", ".*") + "$";
+                        if (System.Text.RegularExpressions.Regex.IsMatch(fileName, regexPattern))
+                            return true;
+                    }
+                }
+
+                return false;
             }
             catch
             {

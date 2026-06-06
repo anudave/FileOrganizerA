@@ -1,0 +1,11 @@
+[33mcommit 94c14d17a035650118b1c7eade101f58e327bc95[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mak[m[33m, [m[1;31morigin/ak[m[33m)[m
+Author: ak <akaleweldhailu0707@gmail.com>
+Commit: ak <akaleweldhailu0707@gmail.com>
+
+    Add preview mode and smooth scrolling
+    - Implement dry run preview to show what files will be organized before moving
+    - Add PreviewItem and PreviewResult classes for detailed analysis
+    - Add PreviewOrganization() method to analyze files without moving
+    - Add preview button to UI with detailed report display
+    - Improve ScrollViewer with smooth mouse wheel scrolling
+    - Show organize/skip/fail breakdown before executing organization
