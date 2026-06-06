@@ -11,6 +11,7 @@ namespace WpfApp1.Views
     public partial class RuleManagementView : UserControl
     {
         private RuleManagementService _ruleService;
+        private ExclusionPatternService _exclusionService;
         private FileOrganizerContext _dbContext;
         private MLModelService _mlService;
         private string _selectedFolderForSuggestions;
@@ -26,6 +27,7 @@ namespace WpfApp1.Views
         {
             _dbContext = DbContextService.GetInstance();
             _ruleService = new RuleManagementService(_dbContext);
+            _exclusionService = new ExclusionPatternService(_dbContext);
             _mlService = new MLModelService(_dbContext);
         }
 
