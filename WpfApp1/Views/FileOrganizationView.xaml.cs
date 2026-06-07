@@ -242,6 +242,14 @@ namespace WpfApp1.Views
                     {
                         displayText += $"  {item.FileName}\n";
                         displayText += $"    → {item.DestinationPath}\n";
+
+
+                        // Show duplicate handling if applicable
+                        if (item.IsDuplicate)
+                        {
+                            displayText += $"    [DUPLICATE] Action: {item.DuplicateAction}\n";
+                        }
+ main
                         displayText += $"    ({FolderStructureService.FormatFileSize(item.FileSizeBytes)})\n\n";
                     }
                 }

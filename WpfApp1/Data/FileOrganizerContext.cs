@@ -44,6 +44,10 @@ namespace WpfApp1.Data
                 .IsRequired()
                 .HasMaxLength(10);
 
+            modelBuilder.Entity<AppSettings>()
+                .Property(s => s.DuplicateHandlingStrategy)
+                .IsRequired();
+
             // Configure FileOrganizationRule
             modelBuilder.Entity<FileOrganizationRule>()
                 .HasKey(r => r.Id);

@@ -56,6 +56,7 @@ namespace WpfApp1.Services
                     existingSettings.SchedulerAutoStart = settings.SchedulerAutoStart;
                     existingSettings.EnableNotifications = settings.EnableNotifications;
                     existingSettings.DefaultOrganizationFolder = settings.DefaultOrganizationFolder;
+                    existingSettings.DuplicateHandlingStrategy = settings.DuplicateHandlingStrategy;
                     existingSettings.LastModifiedDate = settings.LastModifiedDate;
                 }
                 else
@@ -167,6 +168,7 @@ namespace WpfApp1.Services
             settings.SchedulerAutoStart = true;
             settings.EnableNotifications = true;
             settings.Theme = "Dark";
+            settings.DuplicateHandlingStrategy = "Rename";
             settings.DefaultOrganizationFolder = null;
             UpdateSettings(settings);
         }
