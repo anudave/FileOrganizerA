@@ -202,6 +202,112 @@ namespace WpfApp1.Views
             }
         }
 
+        private void PreviewFiles_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(_currentFolderPath))
+            {
+                MessageBox.Show("Please select a folder first", "No Folder Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                PreviewBtn.IsEnabled = false;
+                OrganizeBtn.IsEnabled = false;
+                StatusText.Text = "Previewing organization...";
+                ResultsText.Text = "Analyzing files...\n";
+
+                // Run preview
+                var preview = _organizationService.PreviewOrganization(_currentFolderPath);
+
+                if (!preview.IsValid)
+                {
+                    MessageBox.Show(preview.ValidationMessage, "Preview Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ResultsText.Text = $"ERROR: {preview.ValidationMessage}";
+                    StatusText.Text = "Preview failed";
+                    return;
+                }
+
+                // Build preview display
+                var displayText = string.Join("\n", preview.Messages);
+                displayText += "\n\n";
+
+                // Organize items
+                if (preview.OrganizeItems.Count > 0)
+                {
+                    displayText += "✓ WILL ORGANIZE:\n";
+                    displayText += "═══════════════════════════════════════════════════\n";
+                    foreach (var item in preview.OrganizeItems)
+                    {
+                        displayText += $"  {item.FileName}\n";
+                        displayText += $"    → {item.DestinationPath}\n";
+
+                        // Show duplicate handling if applicable
+                        if (item.IsDuplicate)
+                        {
+                            displayText += $"    [DUPLICATE] Action: {item.DuplicateAction}\n";
+                        }
+
+                        displayText += $"    ({FolderStructureService.FormatFileSize(item.FileSizeBytes)})\n\n";
+                    }
+                }
+
+                // Skip items
+                if (preview.SkipItems.Count > 0)
+                {
+                    displayText += "⊘ WILL SKIP:\n";
+                    displayText += "═══════════════════════════════════════════════════\n";
+                    foreach (var item in preview.SkipItems)
+                    {
+                        displayText += $"  {item.FileName}\n";
+                        displayText += $"    Reason: {item.Reason}\n\n";
+                    }
+                }
+
+                // Failure items
+                if (preview.FailureItems.Count > 0)
+                {
+                    displayText += "✗ WILL FAIL:\n";
+                    displayText += "═══════════════════════════════════════════════════\n";
+                    foreach (var item in preview.FailureItems)
+                    {
+                        displayText += $"  {item.FileName}\n";
+                        displayText += $"    Error: {item.Reason}\n\n";
+                    }
+                }
+
+                ResultsText.Text = displayText;
+
+                // Update status
+                StatusText.Text = $"Preview ready: {preview.OrganizeItems.Count} to organize, {preview.SkipItems.Count} to skip";
+
+                // Show confirmation dialog
+                MessageBox.Show(
+                    $"PREVIEW RESULTS:\n\n" +
+                    $"✓ Will Organize: {preview.OrganizeItems.Count} files\n" +
+                    $"⊘ Will Skip: {preview.SkipItems.Count} files\n" +
+                    $"✗ Will Fail: {preview.FailureItems.Count} files\n\n" +
+                    $"If everything looks good, click 'Start Organization' to proceed.",
+                    "Organization Preview",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                // Re-enable buttons
+                PreviewBtn.IsEnabled = true;
+                OrganizeBtn.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error during preview: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusText.Text = "Preview error";
+            }
+            finally
+            {
+                PreviewBtn.IsEnabled = true;
+                OrganizeBtn.IsEnabled = true;
+            }
+        }
+
         private void OrganizeFiles_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(_currentFolderPath))
