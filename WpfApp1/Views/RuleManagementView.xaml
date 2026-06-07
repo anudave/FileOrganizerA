@@ -12,13 +12,17 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Back Button -->
+        <Button Grid.Row="0" Content="← Back" Background="#FF9500" Foreground="White" Padding="10" Margin="20,10,20,0" FontWeight="Bold" Height="40" Width="100" HorizontalAlignment="Left" Click="BackButton_Click"/>
+
         <!-- Header -->
-        <TextBlock Grid.Row="0" Text="File Organization Rules" Foreground="#FF6B35" FontSize="20" FontWeight="Bold" Margin="20,20,20,10"/>
+        <TextBlock Grid.Row="1" Text="File Organization Rules" Foreground="#FF6B35" FontSize="20" FontWeight="Bold" Margin="20,20,20,10"/>
 
         <!-- Add Rule Section -->
-        <Border Grid.Row="1" Background="#3B3B3B" Margin="20,10,20,10" Padding="15" CornerRadius="5">
+        <Border Grid.Row="2" Background="#3B3B3B" Margin="20,10,20,10" Padding="15" CornerRadius="5">
             <StackPanel>
                 <TextBlock Text="Create New Rule" Foreground="White" FontSize="14" FontWeight="Bold" Margin="0,0,0,15"/>
 
@@ -115,7 +119,7 @@
         </Border>
 
         <!-- Smart Suggestions Results Grid -->
-        <DataGrid Grid.Row="3" x:Name="SuggestionsDataGrid" Background="#2B2B2B" Foreground="White" Margin="20" 
+        <DataGrid Grid.Row="4" x:Name="SuggestionsDataGrid" Background="#2B2B2B" Foreground="White" Margin="20" 
                   AutoGenerateColumns="False" RowBackground="#3B3B3B" 
                   AlternatingRowBackground="#454545" BorderBrush="#4CAF50" BorderThickness="1" Visibility="Collapsed">
             <DataGrid.Columns>
@@ -138,7 +142,7 @@
         </DataGrid>
 
         <!-- Rules List -->
-        <DataGrid Grid.Row="3" x:Name="RulesDataGrid" Background="#2B2B2B" Foreground="White" Margin="20" 
+        <DataGrid Grid.Row="4" x:Name="RulesDataGrid" Background="#2B2B2B" Foreground="White" Margin="20" 
                   AutoGenerateColumns="False" RowBackground="#3B3B3B"
                   AlternatingRowBackground="#454545" BorderBrush="#FF6B35" BorderThickness="1">
             <DataGrid.Columns>
@@ -162,7 +166,7 @@
         </DataGrid>
 
         <!-- Status Bar -->
-        <Border Grid.Row="4" Background="#1E1E1E" Padding="20,10" BorderBrush="#FF6B35" BorderThickness="0,1,0,0">
+        <Border Grid.Row="5" Background="#1E1E1E" Padding="20,10" BorderBrush="#FF6B35" BorderThickness="0,1,0,0">
             <TextBlock x:Name="StatusText" Foreground="#CCCCCC" FontSize="12" Text="Ready"/>
         </Border>
     </Grid>

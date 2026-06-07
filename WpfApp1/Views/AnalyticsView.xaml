@@ -1,4 +1,6 @@
-<UserControl x:Class="WpfApp1.Views.AnalyticsView"
+
+    
+    <UserControl x:Class="WpfApp1.Views.AnalyticsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -9,15 +11,19 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Back Button -->
+        <Button Grid.Row="0" Content="← Back" Background="#FF9500" Foreground="White" Padding="10" Margin="20,10,20,0" FontWeight="Bold" Height="40" Width="100" HorizontalAlignment="Left" Click="BackButton_Click"/>
+
         <!-- Header -->
-        <TextBlock Grid.Row="0" Text="Analytics &amp; Statistics" Foreground="#FF6B35" FontSize="20" FontWeight="Bold" Margin="20,20,20,10"/>
+        <TextBlock Grid.Row="1" Text="Analytics &amp; Statistics" Foreground="#FF6B35" FontSize="20" FontWeight="Bold" Margin="20,20,20,10"/>
 
         <!-- Statistics Summary Section -->
-        <Border Grid.Row="1" Background="#3B3B3B" Margin="20,10,20,10" Padding="15" CornerRadius="5">
+        <Border Grid.Row="2" Background="#3B3B3B" Margin="20,10,20,10" Padding="15" CornerRadius="5">
             <StackPanel>
                 <TextBlock Text="Organization Summary" Foreground="White" FontSize="14" FontWeight="Bold" Margin="0,0,0,15"/>
 
@@ -93,7 +99,7 @@
         </Border>
 
         <!-- Organization History Table -->
-        <Border Grid.Row="2" Background="#3B3B3B" Margin="20,10,20,10" Padding="15" CornerRadius="5">
+        <Border Grid.Row="3" Background="#3B3B3B" Margin="20,10,20,10" Padding="15" CornerRadius="5">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                     <TextBlock Text="Organization History" Foreground="White" FontSize="14" FontWeight="Bold" VerticalAlignment="Center"/>
@@ -138,7 +144,7 @@
         </Border>
 
         <!-- Status Bar -->
-        <Border Grid.Row="3" Background="#1E1E1E" Padding="20,10" BorderBrush="#FF6B35" BorderThickness="0,1,0,0">
+        <Border Grid.Row="4" Background="#1E1E1E" Padding="20,10" BorderBrush="#FF6B35" BorderThickness="0,1,0,0">
             <TextBlock x:Name="StatusText" Foreground="#CCCCCC" FontSize="11" Text="Ready"/>
         </Border>
     </Grid>

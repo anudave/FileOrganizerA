@@ -38,6 +38,13 @@ namespace WpfApp1.Views
             DropZone.DragEnter += DropZone_DragEnter;
         }
 
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            // This is a main page, so go back to the previous main page
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            mainWindow?.NavigateBack(null, null);
+        }
+
         private void DropZone_DragEnter(object sender, System.Windows.DragEventArgs e)
         {
             if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))

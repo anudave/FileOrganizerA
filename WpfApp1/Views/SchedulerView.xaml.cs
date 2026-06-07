@@ -40,6 +40,13 @@ namespace WpfApp1.Views
             }
         }
 
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Navigate back to the previous page via MainWindow
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            mainWindow?.NavigateBack(null, null);
+        }
+
         private void FolderInput_DragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
