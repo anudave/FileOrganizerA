@@ -15,6 +15,7 @@ namespace WpfApp1.Views
         private FileOrganizerContext _dbContext;
         private MLModelService _mlService;
         private string _selectedFolderForSuggestions;
+        private string _currentNestedPage = "MainRules"; // Track nested pages within this view
 
         public RuleManagementView()
         {
@@ -46,12 +47,43 @@ namespace WpfApp1.Views
             }
         }
 
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Check if we're on a nested page (like AI Smart Suggestions)
+            if (_currentNestedPage == "SmartSuggestions")
+            {
+                // Go back to main rules view
+                HideSmartSuggestions();
+                ShowMainRules();
+                _currentNestedPage = "MainRules";
+            }
+            else
+            {
+                // Go back to previous main page (File Organization)
+                var mainWindow = Application.Current.MainWindow as MainWindow;
+                mainWindow?.NavigateBack(null, null);
+            }
+        }
+
+        private void ShowMainRules()
+        {
+            // Show main rules UI
+            RulesDataGrid.Visibility = Visibility.Visible;
+            StatusText.Visibility = Visibility.Visible;
+        }
+
+        private void HideSmartSuggestions()
+        {
+            // Hide smart suggestions UI
+            SuggestionsDataGrid.Visibility = Visibility.Collapsed;
+        }
+
         private void AddRule_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 string ruleName = RuleNameInput.Text.Trim();
-                string filePattern = ExtractFilePattern((FilePatternCombo.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "");
+                string filePattern = ExtractFilePattern(FilePatternCombo.SelectedItem?.ToString() ?? "");
                 string destinationFolder = DestinationFolderInput.Text.Trim();
 
                 // Validate inputs
@@ -70,6 +102,14 @@ namespace WpfApp1.Views
                 if (string.IsNullOrEmpty(destinationFolder))
                 {
                     MessageBox.Show("Please select a destination folder", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Validate rule using the service
+                var (isValid, errorMessage) = _ruleService.ValidateRule(ruleName, filePattern, destinationFolder);
+                if (!isValid)
+                {
+                    MessageBox.Show(errorMessage, "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -100,7 +140,8 @@ namespace WpfApp1.Views
 
             // Remove emoji and get category name
             // Format: "📄 Documents" or "🖼️ Images" etc
-            var cleaned = System.Text.RegularExpressions.Regex.Replace(selectedText, @"[^\w\s]", "").Trim();
+            // Remove everything that's not alphanumeric or space
+            var cleaned = System.Text.RegularExpressions.Regex.Replace(selectedText, @"[^\w\s-]", "").Trim();
 
             // Map category to file patterns
             var categoryPatterns = new Dictionary<string, string>
@@ -450,6 +491,7 @@ namespace WpfApp1.Views
                 SuggestionsDataGrid.ItemsSource = suggestions;
                 SuggestionsDataGrid.Visibility = Visibility.Visible;
                 RulesDataGrid.Visibility = Visibility.Collapsed;
+                _currentNestedPage = "SmartSuggestions"; // Track that we're now on smart suggestions page
 
                 StatusText.Text = $"✓ Generated {suggestions.Count} smart suggestions from {files.Length} files. Review and accept/reject them.";
                 GetSuggestionsBtn.IsEnabled = true;
@@ -478,6 +520,15 @@ namespace WpfApp1.Views
                     // Create a rule from the suggestion
                     string ruleName = $"AI-Suggested: {topSuggestion.SuggestedCategory}";
                     string filePattern = topSuggestion.FileExtension;
+
+                    // Ensure file pattern starts with *.
+                    if (!filePattern.StartsWith("*."))
+                    {
+                        if (filePattern.StartsWith("."))
+                            filePattern = "*" + filePattern;
+                        else
+                            filePattern = "*." + filePattern;
+                    }
 
                     // Let user select destination folder
                     string destination = SelectFolderForRule(topSuggestion.SuggestedCategory);

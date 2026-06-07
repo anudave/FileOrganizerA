@@ -38,6 +38,13 @@ namespace WpfApp1.Views
             DropZone.DragEnter += DropZone_DragEnter;
         }
 
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            // This is a main page, so go back to the previous main page
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            mainWindow?.NavigateBack(null, null);
+        }
+
         private void DropZone_DragEnter(object sender, System.Windows.DragEventArgs e)
         {
             if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
@@ -247,13 +254,12 @@ namespace WpfApp1.Views
                         displayText += $"  {item.FileName}\n";
                         displayText += $"    → {item.DestinationPath}\n";
 
-
                         // Show duplicate handling if applicable
                         if (item.IsDuplicate)
                         {
                             displayText += $"    [DUPLICATE] Action: {item.DuplicateAction}\n";
                         }
- main
+
                         displayText += $"    ({FolderStructureService.FormatFileSize(item.FileSizeBytes)})\n\n";
                     }
                 }

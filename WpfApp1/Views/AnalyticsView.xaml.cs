@@ -27,6 +27,13 @@ namespace WpfApp1.Views
             _organizationService = new FileOrganizationService(_dbContext);
         }
 
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Navigate back to the previous page via MainWindow
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            mainWindow?.NavigateBack(null, null);
+        }
+
         private void LoadAnalytics()
         {
             try
