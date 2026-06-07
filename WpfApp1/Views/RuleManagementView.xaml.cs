@@ -51,7 +51,7 @@ namespace WpfApp1.Views
             try
             {
                 string ruleName = RuleNameInput.Text.Trim();
-                string filePattern = ExtractFilePattern((FilePatternCombo.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "");
+                string filePattern = ExtractFilePattern(FilePatternCombo.SelectedItem?.ToString() ?? "");
                 string destinationFolder = DestinationFolderInput.Text.Trim();
 
                 // Validate inputs
@@ -70,6 +70,14 @@ namespace WpfApp1.Views
                 if (string.IsNullOrEmpty(destinationFolder))
                 {
                     MessageBox.Show("Please select a destination folder", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Validate rule using the service
+                var (isValid, errorMessage) = _ruleService.ValidateRule(ruleName, filePattern, destinationFolder);
+                if (!isValid)
+                {
+                    MessageBox.Show(errorMessage, "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -100,7 +108,8 @@ namespace WpfApp1.Views
 
             // Remove emoji and get category name
             // Format: "📄 Documents" or "🖼️ Images" etc
-            var cleaned = System.Text.RegularExpressions.Regex.Replace(selectedText, @"[^\w\s]", "").Trim();
+            // Remove everything that's not alphanumeric or space
+            var cleaned = System.Text.RegularExpressions.Regex.Replace(selectedText, @"[^\w\s-]", "").Trim();
 
             // Map category to file patterns
             var categoryPatterns = new Dictionary<string, string>
@@ -478,6 +487,15 @@ namespace WpfApp1.Views
                     // Create a rule from the suggestion
                     string ruleName = $"AI-Suggested: {topSuggestion.SuggestedCategory}";
                     string filePattern = topSuggestion.FileExtension;
+
+                    // Ensure file pattern starts with *.
+                    if (!filePattern.StartsWith("*."))
+                    {
+                        if (filePattern.StartsWith("."))
+                            filePattern = "*" + filePattern;
+                        else
+                            filePattern = "*." + filePattern;
+                    }
 
                     // Let user select destination folder
                     string destination = SelectFolderForRule(topSuggestion.SuggestedCategory);
