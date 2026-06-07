@@ -10,6 +10,7 @@ namespace WpfApp1.Data
         public DbSet<FileOrganizationLog> FileOrganizationLogs { get; set; }
         public DbSet<FileOrganizationSchedule> FileOrganizationSchedules { get; set; }
         public DbSet<AppSettings> AppSettings { get; set; }
+        public DbSet<ExclusionPattern> ExclusionPatterns { get; set; }
 
         // ML/AI Suggestion Tables
         public DbSet<FileCategorySuggestion> FileCategorySuggestions { get; set; }
@@ -43,6 +44,10 @@ namespace WpfApp1.Data
                 .IsRequired()
                 .HasMaxLength(10);
 
+            modelBuilder.Entity<AppSettings>()
+                .Property(s => s.DuplicateHandlingStrategy)
+                .IsRequired();
+
             // Configure FileOrganizationRule
             modelBuilder.Entity<FileOrganizationRule>()
                 .HasKey(r => r.Id);
@@ -57,12 +62,58 @@ namespace WpfApp1.Data
                 .IsRequired()
                 .HasMaxLength(50);
 
+            // Configure ExclusionPattern
+            modelBuilder.Entity<ExclusionPattern>()
+                .HasKey(e => e.Id);
+
+            modelBuilder.Entity<ExclusionPattern>()
+                .Property(e => e.PatternName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<ExclusionPattern>()
+                .Property(e => e.Pattern)
+                .IsRequired()
+                .HasMaxLength(255);
+
+            modelBuilder.Entity<ExclusionPattern>()
+                .Property(e => e.Description)
+                .HasMaxLength(500);
+
             // Configure FileOrganizationLog
             modelBuilder.Entity<FileOrganizationLog>()
                 .HasKey(l => l.Id);
 
             modelBuilder.Entity<FileOrganizationLog>()
                 .Property(l => l.SourceFilePath)
+                .IsRequired();
+
+            // Configure FileOrganizationSchedule
+            modelBuilder.Entity<FileOrganizationSchedule>()
+                .HasKey(s => s.Id);
+
+            modelBuilder.Entity<FileOrganizationSchedule>()
+                .Property(s => s.ScheduleName)
+                .IsRequired();
+
+            modelBuilder.Entity<FileOrganizationSchedule>()
+                .Property(s => s.TargetFolderPath)
+                .IsRequired();
+
+            modelBuilder.Entity<FileOrganizationSchedule>()
+                .Property(s => s.ScheduleType)
+                .IsRequired();
+
+            modelBuilder.Entity<FileOrganizationSchedule>()
+                .Property(s => s.StartTime)
+                .IsRequired();
+
+            modelBuilder.Entity<FileOrganizationSchedule>()
+                .Property(s => s.LastRunStatus)
+                .IsRequired();
+
+            modelBuilder.Entity<FileOrganizationSchedule>()
+                .Property(s => s.LastRunMessage)
                 .IsRequired();
 
             // Configure FileCategorySuggestion (ML/AI)

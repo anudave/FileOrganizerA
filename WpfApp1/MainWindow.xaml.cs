@@ -14,13 +14,21 @@ namespace WpfApp1
         private AnalyticsView _analyticsView;
         private SchedulerView _schedulerView;
         private SettingsView _settingsView;
+        private NavigationService _navigationService;
+        private string _currentPage = "FileOrganization";
 
         public MainWindow()
         {
             InitializeComponent();
             InitializeDatabase();
             InitializeViews();
+            InitializeNavigationService();
             Loaded += (s, e) => NavigateToFileOrganization(null, null);
+        }
+
+        private void InitializeNavigationService()
+        {
+            _navigationService = NavigationService.GetInstance();
         }
 
         private void InitializeDatabase()
@@ -29,6 +37,11 @@ namespace WpfApp1
             {
                 _dbContext = DbContextService.GetInstance();
                 _dbContext.Database.EnsureCreated();
+
+                // Initialize default exclusion patterns
+                var exclusionService = new ExclusionPatternService(_dbContext);
+                exclusionService.InitializeDefaultPatterns();
+
                 MessageBox.Show("Database initialized successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -52,6 +65,9 @@ namespace WpfApp1
             ContentHost.Children.Add(_fileOrganizationView);
             if (RuleManagementBtn != null) RuleManagementBtn.Background = System.Windows.Media.Brushes.Gray;
             if (FileOrganizationBtn != null) FileOrganizationBtn.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 107, 53));
+            _currentPage = "FileOrganization";
+            _navigationService.NavigateTo("FileOrganization");
+            UpdateBackButtonVisibility();
         }
 
         private void NavigateToRuleManagement(object sender, RoutedEventArgs e)
@@ -61,6 +77,9 @@ namespace WpfApp1
             if (RuleManagementBtn != null) RuleManagementBtn.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 107, 53));
             if (FileOrganizationBtn != null) FileOrganizationBtn.Background = System.Windows.Media.Brushes.Gray;
             if (AnalyticsBtn != null) AnalyticsBtn.Background = System.Windows.Media.Brushes.Gray;
+            _currentPage = "RuleManagement";
+            _navigationService.NavigateTo("RuleManagement");
+            UpdateBackButtonVisibility();
         }
 
         private void NavigateToAnalytics(object sender, RoutedEventArgs e)
@@ -72,6 +91,9 @@ namespace WpfApp1
             if (SchedulerBtn != null) SchedulerBtn.Background = System.Windows.Media.Brushes.Gray;
             if (SettingsBtn != null) SettingsBtn.Background = System.Windows.Media.Brushes.Gray;
             if (AnalyticsBtn != null) AnalyticsBtn.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 107, 53));
+            _currentPage = "Analytics";
+            _navigationService.NavigateTo("Analytics");
+            UpdateBackButtonVisibility();
         }
 
         private void NavigateToScheduler(object sender, RoutedEventArgs e)
@@ -83,6 +105,9 @@ namespace WpfApp1
             if (AnalyticsBtn != null) AnalyticsBtn.Background = System.Windows.Media.Brushes.Gray;
             if (SchedulerBtn != null) SchedulerBtn.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 107, 53));
             if (SettingsBtn != null) SettingsBtn.Background = System.Windows.Media.Brushes.Gray;
+            _currentPage = "Scheduler";
+            _navigationService.NavigateTo("Scheduler");
+            UpdateBackButtonVisibility();
         }
 
         private void NavigateToSettings(object sender, RoutedEventArgs e)
@@ -94,6 +119,46 @@ namespace WpfApp1
             if (AnalyticsBtn != null) AnalyticsBtn.Background = System.Windows.Media.Brushes.Gray;
             if (SchedulerBtn != null) SchedulerBtn.Background = System.Windows.Media.Brushes.Gray;
             if (SettingsBtn != null) SettingsBtn.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 107, 53));
+            _currentPage = "Settings";
+            _navigationService.NavigateTo("Settings");
+            UpdateBackButtonVisibility();
+        }
+
+        public void NavigateBack(object sender, RoutedEventArgs e)
+        {
+            string previousPage = _navigationService.GoBack();
+
+            // Navigate based on the previous page
+            switch (previousPage)
+            {
+                case "FileOrganization":
+                    NavigateToFileOrganization(null, null);
+                    break;
+                case "RuleManagement":
+                    NavigateToRuleManagement(null, null);
+                    break;
+                case "Analytics":
+                    NavigateToAnalytics(null, null);
+                    break;
+                case "Scheduler":
+                    NavigateToScheduler(null, null);
+                    break;
+                case "Settings":
+                    NavigateToSettings(null, null);
+                    break;
+                default:
+                    NavigateToFileOrganization(null, null);
+                    break;
+            }
+        }
+
+        private void UpdateBackButtonVisibility()
+        {
+            if (BackBtn != null)
+            {
+                // Back button is visible if not on the main page
+                BackBtn.Visibility = (_currentPage != "FileOrganization") ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         private void Window_Closed(object? sender, EventArgs e)

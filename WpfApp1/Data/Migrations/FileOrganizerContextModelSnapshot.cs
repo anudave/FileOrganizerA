@@ -29,6 +29,10 @@ namespace WpfApp1.Data.Migrations
                     b.Property<string>("DefaultOrganizationFolder")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("DuplicateHandlingStrategy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("EnableNotifications")
                         .HasColumnType("INTEGER");
 

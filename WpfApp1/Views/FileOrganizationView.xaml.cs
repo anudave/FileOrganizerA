@@ -38,6 +38,13 @@ namespace WpfApp1.Views
             DropZone.DragEnter += DropZone_DragEnter;
         }
 
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            // This is a main page, so go back to the previous main page
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            mainWindow?.NavigateBack(null, null);
+        }
+
         private void DropZone_DragEnter(object sender, System.Windows.DragEventArgs e)
         {
             if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
@@ -158,8 +165,13 @@ namespace WpfApp1.Views
             TotalFilesText.Text = fileCount.ToString();
             TotalSizeText.Text = FolderStructureService.FormatFileSize(totalSize);
 
+
             // Enable organize button if folder is selected
             OrganizeBtn.IsEnabled = fileCount > 0 && !string.IsNullOrEmpty(_currentFolderPath);
+            // Enable buttons if folder is selected
+            bool enableButtons = fileCount > 0 && !string.IsNullOrEmpty(_currentFolderPath);
+            PreviewBtn.IsEnabled = enableButtons;
+            OrganizeBtn.IsEnabled = enableButtons;
             StatusText.Text = $"Ready to organize {fileCount} files";
 
             // Clear previous results
@@ -199,6 +211,112 @@ namespace WpfApp1.Views
                 {
                     LoadFolder(path);
                 }
+            }
+        }
+
+        private void PreviewFiles_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(_currentFolderPath))
+            {
+                MessageBox.Show("Please select a folder first", "No Folder Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                PreviewBtn.IsEnabled = false;
+                OrganizeBtn.IsEnabled = false;
+                StatusText.Text = "Previewing organization...";
+                ResultsText.Text = "Analyzing files...\n";
+
+                // Run preview
+                var preview = _organizationService.PreviewOrganization(_currentFolderPath);
+
+                if (!preview.IsValid)
+                {
+                    MessageBox.Show(preview.ValidationMessage, "Preview Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ResultsText.Text = $"ERROR: {preview.ValidationMessage}";
+                    StatusText.Text = "Preview failed";
+                    return;
+                }
+
+                // Build preview display
+                var displayText = string.Join("\n", preview.Messages);
+                displayText += "\n\n";
+
+                // Organize items
+                if (preview.OrganizeItems.Count > 0)
+                {
+                    displayText += "✓ WILL ORGANIZE:\n";
+                    displayText += "═══════════════════════════════════════════════════\n";
+                    foreach (var item in preview.OrganizeItems)
+                    {
+                        displayText += $"  {item.FileName}\n";
+                        displayText += $"    → {item.DestinationPath}\n";
+
+                        // Show duplicate handling if applicable
+                        if (item.IsDuplicate)
+                        {
+                            displayText += $"    [DUPLICATE] Action: {item.DuplicateAction}\n";
+                        }
+
+                        displayText += $"    ({FolderStructureService.FormatFileSize(item.FileSizeBytes)})\n\n";
+                    }
+                }
+
+                // Skip items
+                if (preview.SkipItems.Count > 0)
+                {
+                    displayText += "⊘ WILL SKIP:\n";
+                    displayText += "═══════════════════════════════════════════════════\n";
+                    foreach (var item in preview.SkipItems)
+                    {
+                        displayText += $"  {item.FileName}\n";
+                        displayText += $"    Reason: {item.Reason}\n\n";
+                    }
+                }
+
+                // Failure items
+                if (preview.FailureItems.Count > 0)
+                {
+                    displayText += "✗ WILL FAIL:\n";
+                    displayText += "═══════════════════════════════════════════════════\n";
+                    foreach (var item in preview.FailureItems)
+                    {
+                        displayText += $"  {item.FileName}\n";
+                        displayText += $"    Error: {item.Reason}\n\n";
+                    }
+                }
+
+                ResultsText.Text = displayText;
+
+                // Update status
+                StatusText.Text = $"Preview ready: {preview.OrganizeItems.Count} to organize, {preview.SkipItems.Count} to skip";
+
+                // Show confirmation dialog
+                MessageBox.Show(
+                    $"PREVIEW RESULTS:\n\n" +
+                    $"✓ Will Organize: {preview.OrganizeItems.Count} files\n" +
+                    $"⊘ Will Skip: {preview.SkipItems.Count} files\n" +
+                    $"✗ Will Fail: {preview.FailureItems.Count} files\n\n" +
+                    $"If everything looks good, click 'Start Organization' to proceed.",
+                    "Organization Preview",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                // Re-enable buttons
+                PreviewBtn.IsEnabled = true;
+                OrganizeBtn.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error during preview: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusText.Text = "Preview error";
+            }
+            finally
+            {
+                PreviewBtn.IsEnabled = true;
+                OrganizeBtn.IsEnabled = true;
             }
         }
 
@@ -302,6 +420,18 @@ namespace WpfApp1.Views
         ~FileOrganizationView()
         {
             _dbContext?.Dispose();
+        }
+
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var scrollViewer = sender as ScrollViewer;
+            if (scrollViewer != null)
+            {
+                // Smooth scrolling: scroll by 3 lines per wheel tick (instead of default jump)
+                double scrollAmount = e.Delta > 0 ? -3 : 3; // Negative for up, positive for down
+                scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset + scrollAmount);
+                e.Handled = true;
+            }
         }
     }
 }
