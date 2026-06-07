@@ -35,12 +35,21 @@ namespace WpfApp1.Services
         }
 
         public class OrganizationResult
-        {
-            public int SuccessCount { get; set; }
-            public int SkippedCount { get; set; }
-            public int FailureCount { get; set; }
-            public List<string> Messages { get; set; } = new();
-        }
+            {
+                public int SuccessCount { get; set; }
+                public int SkippedCount { get; set; }
+                public int FailureCount { get; set; }
+                public List<string> Messages { get; set; } = new();
+                public bool HasErrors { get; set; } = false;
+            }
+
+            public class SystemDiagnostics
+            {
+                public bool RulesExist { get; set; }
+                public int ActiveRuleCount { get; set; }
+                public List<string> DestinationFolderIssues { get; set; } = new();
+                public string DiagnosticMessage { get; set; }
+            }
 
         public FileOrganizationService(FileOrganizerContext dbContext)
         {
@@ -179,6 +188,72 @@ namespace WpfApp1.Services
         }
 
         /// <summary>
+        /// Validate system before organization
+        /// </summary>
+        public SystemDiagnostics DiagnoseSystem()
+        {
+            var diagnostics = new SystemDiagnostics();
+
+            try
+            {
+                var rules = _dbContext.FileOrganizationRules.ToList();
+                var activeRules = rules.Where(r => r.IsActive).ToList();
+
+                diagnostics.RulesExist = rules.Count > 0;
+                diagnostics.ActiveRuleCount = activeRules.Count;
+
+                if (!diagnostics.RulesExist)
+                {
+                    diagnostics.DiagnosticMessage = "❌ NO RULES FOUND: Please create at least one file organization rule.";
+                    return diagnostics;
+                }
+
+                if (activeRules.Count == 0)
+                {
+                    diagnostics.DiagnosticMessage = "❌ NO ACTIVE RULES: Please enable at least one rule.";
+                    return diagnostics;
+                }
+
+                // Check destination folders
+                foreach (var rule in activeRules)
+                {
+                    if (!Directory.Exists(rule.DestinationFolder))
+                    {
+                        try
+                        {
+                            // Try to create parent directories to see if path is valid
+                            var pathInfo = new DirectoryInfo(rule.DestinationFolder);
+                            if (pathInfo.Parent == null || !pathInfo.Parent.Exists)
+                            {
+                                diagnostics.DestinationFolderIssues.Add($"Invalid path: {rule.DestinationFolder}");
+                            }
+                            // Otherwise folder doesn't exist but can be created
+                        }
+                        catch
+                        {
+                            diagnostics.DestinationFolderIssues.Add($"Cannot create: {rule.DestinationFolder}");
+                        }
+                    }
+                }
+
+                if (diagnostics.DestinationFolderIssues.Count > 0)
+                {
+                    diagnostics.DiagnosticMessage = $"⚠️ {diagnostics.DestinationFolderIssues.Count} destination folder issue(s). Folders will be created as needed.";
+                }
+                else
+                {
+                    diagnostics.DiagnosticMessage = $"✅ System ready: {diagnostics.ActiveRuleCount} active rule(s) configured";
+                }
+            }
+            catch (Exception ex)
+            {
+                diagnostics.DiagnosticMessage = $"❌ Error during diagnosis: {ex.Message}";
+            }
+
+            return diagnostics;
+        }
+
+        /// <summary>
         /// Main function to organize files based on rules
         /// </summary>
         public OrganizationResult OrganizeFiles(string sourceFolder, bool moveFiles = true)
@@ -200,6 +275,12 @@ namespace WpfApp1.Services
                 var files = GetAllFilesInFolder(sourceFolder);
                 result.Messages.Add($"Found {files.Count} files to process");
 
+                if (files.Count == 0)
+                {
+                    result.Messages.Add("WARNING: No files found in the source folder.");
+                    return result;
+                }
+
                 // Step 3: Get all active rules from database
                 var rules = _dbContext.FileOrganizationRules
                     .Where(r => r.IsActive)
@@ -209,11 +290,34 @@ namespace WpfApp1.Services
 
                 if (rules.Count == 0)
                 {
-                    result.Messages.Add("WARNING: No active rules found. No files will be organized.");
+                    result.Messages.Add("ERROR: No active rules found!");
+                    result.Messages.Add("Please create at least one file organization rule in the Rule Management tab.");
+                    result.Messages.Add("Example: Create a rule for '*.pdf' → 'C:\\Documents\\PDFs'");
                     result.SkippedCount = files.Count;
                     return result;
                 }
+                // Debug: Log all available rules
+                result.Messages.Add("Available rules:");
+                foreach (var rule in rules)
+                {
+                    result.Messages.Add($"  • {rule.RuleName}: {rule.FilePattern} → {rule.DestinationFolder}");
+                }
 
+                // Step 4: Validate destination folders
+                foreach (var rule in rules)
+                {
+                    if (!Directory.Exists(rule.DestinationFolder))
+                    {
+                        result.Messages.Add($"⚠️ WARNING: Destination folder does not exist: {rule.DestinationFolder}");
+                        result.Messages.Add($"   Rule: {rule.RuleName}");
+                        result.Messages.Add($"   The folder will be created automatically when needed.");
+                    }
+                }
+
+                result.Messages.Add("");
+                result.Messages.Add("Processing files...");
+
+                // Step 5: Process each file
                 // Get active exclusion patterns
                 var exclusionPatterns = _dbContext.ExclusionPatterns
                     .Where(e => e.IsActive)
@@ -225,6 +329,7 @@ namespace WpfApp1.Services
                 }
 
                 // Step 4: Process each file
+
                 foreach (var file in files)
                 {
                     try
@@ -233,6 +338,7 @@ namespace WpfApp1.Services
                         var fileName = fileInfo.Name;
                         var extension = fileInfo.Extension.ToLower();
 
+                        result.Messages.Add($"  Checking: {fileInfo.Name} (extension: {extension})");
                         // Check if file is excluded
                         if (IsFileExcluded(fileName, exclusionPatterns))
                         {
@@ -250,31 +356,32 @@ namespace WpfApp1.Services
                             // No matching rule - skip file
                             result.SkippedCount++;
                             LogFileOrganization(file, null, "Skipped", "No matching rule");
-                            result.Messages.Add($"⊘ SKIPPED: {fileInfo.Name} (no matching rule)");
+                            result.Messages.Add($"  ⊘ SKIPPED: No matching rule");
                         }
                         else
                         {
                             // Matching rule found - organize file
+                            result.Messages.Add($"  ✓ Matched rule: {matchingRule.RuleName}");
                             bool success = OrganizeFile(file, matchingRule.DestinationFolder, moveFiles);
 
                             if (success)
                             {
                                 result.SuccessCount++;
                                 LogFileOrganization(file, matchingRule.DestinationFolder, "Success", null);
-                                result.Messages.Add($"✓ ORGANIZED: {fileInfo.Name} → {matchingRule.DestinationFolder}");
+                                result.Messages.Add($"  ✓ ORGANIZED → {matchingRule.DestinationFolder}");
                             }
                             else
                             {
                                 result.FailureCount++;
                                 LogFileOrganization(file, matchingRule.DestinationFolder, "Failed", "Unable to move file");
-                                result.Messages.Add($"✗ FAILED: {fileInfo.Name} - Could not move to {matchingRule.DestinationFolder}");
+                                result.Messages.Add($"  ✗ FAILED: Could not move to {matchingRule.DestinationFolder}");
                             }
                         }
                     }
                     catch (Exception ex)
                     {
                         result.FailureCount++;
-                        result.Messages.Add($"✗ ERROR: {Path.GetFileName(file)} - {ex.Message}");
+                        result.Messages.Add($"  ✗ ERROR: {Path.GetFileName(file)} - {ex.Message}");
                     }
                 }
 

@@ -10,7 +10,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -119,6 +119,59 @@
         </Border>
 
         <!-- Smart Suggestions Results Grid -->
+        <Border Grid.Row="3" Margin="20,10,20,10" Background="#2B2B2B" Visibility="Collapsed" x:Name="SuggestionsScrollViewer" BorderBrush="#4CAF50" BorderThickness="2" CornerRadius="5">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PanningMode="VerticalFirst">
+                <DataGrid x:Name="SuggestionsDataGrid" Background="#2B2B2B" Foreground="White"
+                          AutoGenerateColumns="False" RowBackground="#3B3B3B" 
+                          AlternatingRowBackground="#454545" BorderBrush="#4CAF50" BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="200" Foreground="White"/>
+                        <DataGridTextColumn Header="Suggested Category" Binding="{Binding Suggestions[0].SuggestedCategory}" Width="120" Foreground="White"/>
+                        <DataGridTextColumn Header="Destination" Binding="{Binding Suggestions[0].DestinationFolder}" Width="*" Foreground="White"/>
+                        <DataGridTextColumn Header="Confidence (%)" Binding="{Binding Suggestions[0].ConfidenceScore}" Width="100" Foreground="#4CAF50" FontWeight="Bold"/>
+                        <DataGridTextColumn Header="Reasons" Binding="{Binding TopSuggestionReason}" Width="200" Foreground="White"/>
+                        <DataGridTemplateColumn Header="Action" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="✓ Accept" Background="#4CAF50" Foreground="White" Padding="8,4" Margin="0,0,5,0" Click="AcceptSuggestion_Click" Tag="{Binding}"/>
+                                        <Button Content="✗ Reject" Background="#F44336" Foreground="White" Padding="8,4" Click="RejectSuggestion_Click" Tag="{Binding}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Rules List -->
+        <Border Grid.Row="3" Margin="20,10,20,10" Background="#2B2B2B" x:Name="RulesScrollViewer" BorderBrush="#FF6B35" BorderThickness="2" CornerRadius="5">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PanningMode="VerticalFirst">
+                <DataGrid x:Name="RulesDataGrid" Background="#2B2B2B" Foreground="White"
+                          AutoGenerateColumns="False" RowBackground="#3B3B3B"
+                          AlternatingRowBackground="#454545" BorderBrush="#FF6B35" BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50" IsReadOnly="True" Foreground="White"/>
+                        <DataGridTextColumn Header="Rule Name" Binding="{Binding RuleName}" Width="*" Foreground="White"/>
+                        <DataGridTextColumn Header="File Pattern" Binding="{Binding FilePattern}" Width="120" Foreground="White"/>
+                        <DataGridTextColumn Header="Destination Folder" Binding="{Binding DestinationFolder}" Width="200" Foreground="White"/>
+                        <DataGridCheckBoxColumn Header="Active" Binding="{Binding IsActive}" Width="70"/>
+                        <DataGridTextColumn Header="Created Date" Binding="{Binding CreatedDate, StringFormat='yyyy-MM-dd HH:mm'}" Width="150" IsReadOnly="True" Foreground="White"/>
+                        <DataGridTemplateColumn Header="Actions" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="Edit" Background="#4CAF50" Foreground="White" Padding="8,4" Margin="0,0,5,0" Click="EditRule_Click" Tag="{Binding Id}"/>
+                                        <Button Content="Delete" Background="#F44336" Foreground="White" Padding="8,4" Click="DeleteRule_Click" Tag="{Binding Id}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </ScrollViewer>
+        </Border>
         <DataGrid Grid.Row="4" x:Name="SuggestionsDataGrid" Background="#2B2B2B" Foreground="White" Margin="20" 
                   AutoGenerateColumns="False" RowBackground="#3B3B3B" 
                   AlternatingRowBackground="#454545" BorderBrush="#4CAF50" BorderThickness="1" Visibility="Collapsed">

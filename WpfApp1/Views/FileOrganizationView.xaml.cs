@@ -328,27 +328,52 @@ namespace WpfApp1.Views
                 return;
             }
 
-            var rules = _ruleService.GetAllRules();
-            var activeRules = rules.FindAll(r => r.IsActive);
-
-            if (activeRules.Count == 0)
-            {
-                MessageBox.Show("No active rules found. Please create and activate rules first.", "No Rules", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
             try
             {
-                OrganizeBtn.IsEnabled = false;
-                StatusText.Text = "Organizing files...";
-                ResultsText.Text = "Processing...\n";
+                // Step 1: Diagnose system before organization
+                var diagnostics = _organizationService.DiagnoseSystem();
 
-                // Run file organization
+                if (!diagnostics.RulesExist)
+                {
+                    MessageBox.Show(
+                        "❌ No file organization rules found!\n\n" +
+                        "Please create at least one rule in the 'Rule Management' tab.\n\n" +
+                        "Example:\n" +
+                        "• Rule Name: PDF Documents\n" +
+                        "• Pattern: *.pdf\n" +
+                        "• Destination: C:\\Documents\\PDFs",
+                        "No Rules Found",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (diagnostics.ActiveRuleCount == 0)
+                {
+                    MessageBox.Show(
+                        "❌ No ACTIVE rules found!\n\n" +
+                        "You have rules, but they are disabled.\n" +
+                        "Please enable at least one rule in the 'Rule Management' tab.",
+                        "No Active Rules",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Step 2: Show diagnostics result
+                OrganizeBtn.IsEnabled = false;
+                StatusText.Text = "Running diagnostics...";
+                ResultsText.Text = diagnostics.DiagnosticMessage + "\n\n";
+
+                // Step 3: Run file organization
+                StatusText.Text = "Organizing files...";
+                ResultsText.Text += "Organizing files...\n";
+
                 var result = _organizationService.OrganizeFiles(_currentFolderPath, moveFiles: true);
 
                 // Display results
                 string resultText = string.Join("\n", result.Messages);
-                ResultsText.Text = resultText;
+                ResultsText.Text += resultText;
 
                 // Update status
                 StatusText.Text = $"✓ Complete: {result.SuccessCount} organized, {result.SkippedCount} skipped, {result.FailureCount} failed";

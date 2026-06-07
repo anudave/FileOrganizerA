@@ -489,6 +489,9 @@ namespace WpfApp1.Views
 
                 // Step 8: Display suggestions
                 SuggestionsDataGrid.ItemsSource = suggestions;
+
+                SuggestionsScrollViewer.Visibility = Visibility.Visible;
+                RulesScrollViewer.Visibility = Visibility.Collapsed;
                 SuggestionsDataGrid.Visibility = Visibility.Visible;
                 RulesDataGrid.Visibility = Visibility.Collapsed;
                 _currentNestedPage = "SmartSuggestions"; // Track that we're now on smart suggestions page
@@ -521,11 +524,18 @@ namespace WpfApp1.Views
                     string ruleName = $"AI-Suggested: {topSuggestion.SuggestedCategory}";
                     string filePattern = topSuggestion.FileExtension;
 
+
+                    // Ensure file pattern starts with *. format
+
                     // Ensure file pattern starts with *.
+
                     if (!filePattern.StartsWith("*."))
                     {
                         if (filePattern.StartsWith("."))
                             filePattern = "*" + filePattern;
+
+                        else if (!string.IsNullOrEmpty(filePattern))
+
                         else
                             filePattern = "*." + filePattern;
                     }
@@ -595,8 +605,8 @@ namespace WpfApp1.Views
         private void ShowRulesList()
         {
             LoadRules();
-            SuggestionsDataGrid.Visibility = Visibility.Collapsed;
-            RulesDataGrid.Visibility = Visibility.Visible;
+            SuggestionsScrollViewer.Visibility = Visibility.Collapsed;
+            RulesScrollViewer.Visibility = Visibility.Visible;
         }
 
         /// <summary>
