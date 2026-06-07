@@ -278,7 +278,9 @@ namespace WpfApp1.Services
                 DaysOfWeek = daysOfWeek,
                 IntervalHours = intervalHours,
                 IsActive = true,
-                LastRunTime = default
+                LastRunTime = default,
+                LastRunStatus = "Pending",
+                LastRunMessage = "Awaiting first run"
             };
 
             _dbContext.FileOrganizationSchedules.Add(schedule);

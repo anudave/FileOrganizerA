@@ -158,9 +158,13 @@ namespace WpfApp1.Views
             TotalFilesText.Text = fileCount.ToString();
             TotalSizeText.Text = FolderStructureService.FormatFileSize(totalSize);
 
+
             // Enable organize button if folder is selected
             OrganizeBtn.IsEnabled = fileCount > 0 && !string.IsNullOrEmpty(_currentFolderPath);
-            PreviewBtn.IsEnabled = fileCount > 0 && !string.IsNullOrEmpty(_currentFolderPath);
+            // Enable buttons if folder is selected
+            bool enableButtons = fileCount > 0 && !string.IsNullOrEmpty(_currentFolderPath);
+            PreviewBtn.IsEnabled = enableButtons;
+            OrganizeBtn.IsEnabled = enableButtons;
             StatusText.Text = $"Ready to organize {fileCount} files";
 
             // Clear previous results
