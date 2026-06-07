@@ -34,6 +34,27 @@ namespace WpfApp1.Services
             public string ValidationMessage { get; set; }
         }
 
+        public class PreviewItem
+        {
+            public string FileName { get; set; }
+            public string SourcePath { get; set; }
+            public string DestinationPath { get; set; }
+            public string Status { get; set; } // "Will Organize", "Will Skip", "Will Fail"
+            public string Reason { get; set; }
+            public string FileExtension { get; set; }
+            public long FileSizeBytes { get; set; }
+        }
+
+        public class PreviewResult
+        {
+            public List<PreviewItem> OrganizeItems { get; set; } = new();
+            public List<PreviewItem> SkipItems { get; set; } = new();
+            public List<PreviewItem> FailureItems { get; set; } = new();
+            public List<string> Messages { get; set; } = new();
+            public bool IsValid { get; set; } = true;
+            public string ValidationMessage { get; set; }
+        }
+
         public class OrganizationResult
         {
             public int SuccessCount { get; set; }
@@ -206,6 +227,153 @@ namespace WpfApp1.Services
         }
 
         /// <summary>
+        /// Preview mode - shows what WILL happen without moving files
+        /// </summary>
+        public PreviewResult PreviewOrganization(string sourceFolder)
+        {
+            var preview = new PreviewResult();
+
+            try
+            {
+                // Step 1: Validate source folder
+                if (!Directory.Exists(sourceFolder))
+                {
+                    preview.IsValid = false;
+                    preview.ValidationMessage = $"Source folder does not exist: {sourceFolder}";
+                    return preview;
+                }
+
+                preview.Messages.Add($"Previewing file organization for: {sourceFolder}");
+
+                // Step 2: Get all files
+                var files = GetAllFilesInFolder(sourceFolder);
+                preview.Messages.Add($"Found {files.Count} files to preview");
+
+                if (files.Count == 0)
+                {
+                    preview.IsValid = false;
+                    preview.ValidationMessage = "No files found in the selected folder";
+                    return preview;
+                }
+
+                // Step 3: Get all active rules
+                var rules = _dbContext.FileOrganizationRules
+                    .Where(r => r.IsActive)
+                    .ToList();
+
+                preview.Messages.Add($"Loaded {rules.Count} active rules");
+
+                if (rules.Count == 0)
+                {
+                    preview.IsValid = false;
+                    preview.ValidationMessage = "No active rules found. Please create rules first.";
+                    return preview;
+                }
+
+                // Step 4: Get active exclusion patterns
+                var exclusionPatterns = _dbContext.ExclusionPatterns
+                    .Where(e => e.IsActive)
+                    .ToList();
+
+                if (exclusionPatterns.Count > 0)
+                {
+                    preview.Messages.Add($"Loaded {exclusionPatterns.Count} active exclusion patterns");
+                }
+
+                // Step 5: Analyze each file
+                foreach (var file in files)
+                {
+                    try
+                    {
+                        var fileInfo = new FileInfo(file);
+                        var fileName = fileInfo.Name;
+                        var extension = fileInfo.Extension.ToLower();
+
+                        // Check if file is excluded
+                        if (IsFileExcluded(fileName, exclusionPatterns))
+                        {
+                            var excludedItem = new PreviewItem
+                            {
+                                FileName = fileName,
+                                SourcePath = file,
+                                FileExtension = extension,
+                                FileSizeBytes = fileInfo.Length,
+                                Status = "Will Skip",
+                                Reason = "File matches exclusion pattern",
+                                DestinationPath = "N/A"
+                            };
+                            preview.SkipItems.Add(excludedItem);
+                            continue;
+                        }
+
+                        var matchingRule = FindMatchingRule(extension, rules);
+
+                        var previewItem = new PreviewItem
+                        {
+                            FileName = fileInfo.Name,
+                            SourcePath = file,
+                            FileExtension = extension,
+                            FileSizeBytes = fileInfo.Length
+                        };
+
+                        if (matchingRule == null)
+                        {
+                            // Will skip - no matching rule
+                            previewItem.Status = "Will Skip";
+                            previewItem.Reason = "No matching rule for this file type";
+                            previewItem.DestinationPath = "N/A";
+                            preview.SkipItems.Add(previewItem);
+                        }
+                        else
+                        {
+                            // Will organize
+                            var destinationPath = Path.Combine(matchingRule.DestinationFolder, fileInfo.Name);
+
+                            // Check for conflicts
+                            if (File.Exists(destinationPath))
+                            {
+                                destinationPath = GetUniqueFileName(destinationPath);
+                            }
+
+                            previewItem.Status = "Will Organize";
+                            previewItem.Reason = $"Matches rule: {matchingRule.RuleName}";
+                            previewItem.DestinationPath = destinationPath;
+                            preview.OrganizeItems.Add(previewItem);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        var previewItem = new PreviewItem
+                        {
+                            FileName = Path.GetFileName(file),
+                            SourcePath = file,
+                            Status = "Will Fail",
+                            Reason = $"Error: {ex.Message}",
+                            DestinationPath = "N/A"
+                        };
+                        preview.FailureItems.Add(previewItem);
+                    }
+                }
+
+                // Summary
+                preview.Messages.Add("");
+                preview.Messages.Add("═══════════════════════════════════");
+                preview.Messages.Add($"Will Organize: {preview.OrganizeItems.Count} files");
+                preview.Messages.Add($"Will Skip: {preview.SkipItems.Count} files");
+                preview.Messages.Add($"Will Fail: {preview.FailureItems.Count} files");
+                preview.Messages.Add("═══════════════════════════════════");
+
+                return preview;
+            }
+            catch (Exception ex)
+            {
+                preview.IsValid = false;
+                preview.ValidationMessage = $"Error during preview: {ex.Message}";
+                return preview;
+            }
+        }
+
+        /// <summary>
         /// Main function to organize files based on rules
         /// </summary>
         public OrganizationResult OrganizeFiles(string sourceFolder, bool moveFiles = true)
@@ -241,13 +409,33 @@ namespace WpfApp1.Services
                     return result;
                 }
 
+                // Get active exclusion patterns
+                var exclusionPatterns = _dbContext.ExclusionPatterns
+                    .Where(e => e.IsActive)
+                    .ToList();
+
+                if (exclusionPatterns.Count > 0)
+                {
+                    result.Messages.Add($"Loaded {exclusionPatterns.Count} active exclusion patterns");
+                }
+
                 // Step 4: Process each file
                 foreach (var file in files)
                 {
                     try
                     {
                         var fileInfo = new FileInfo(file);
+                        var fileName = fileInfo.Name;
                         var extension = fileInfo.Extension.ToLower();
+
+                        // Check if file is excluded
+                        if (IsFileExcluded(fileName, exclusionPatterns))
+                        {
+                            result.SkippedCount++;
+                            LogFileOrganization(file, null, "Skipped", "File matches exclusion pattern");
+                            result.Messages.Add($"⊘ EXCLUDED: {fileName} (matches exclusion pattern)");
+                            continue;
+                        }
 
                         // Find matching rule
                         var matchingRule = FindMatchingRule(extension, rules);
@@ -522,6 +710,71 @@ namespace WpfApp1.Services
             {
                 var extension = Path.GetExtension(fileName);
                 return MatchesPattern(extension, rule.FilePattern);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Check if file matches any exclusion pattern
+        /// </summary>
+        private bool IsFileExcluded(string fileName, List<ExclusionPattern> exclusionPatterns)
+        {
+            if (exclusionPatterns == null || exclusionPatterns.Count == 0)
+                return false;
+
+            var lowerFileName = fileName.ToLower();
+
+            foreach (var pattern in exclusionPatterns)
+            {
+                if (MatchesExclusionPattern(lowerFileName, pattern.Pattern.ToLower()))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if filename matches an exclusion pattern
+        /// </summary>
+        private bool MatchesExclusionPattern(string fileName, string pattern)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(fileName) || string.IsNullOrWhiteSpace(pattern))
+                    return false;
+
+                // Handle pipe-separated patterns
+                var patterns = pattern.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var singlePattern in patterns)
+                {
+                    var trimmedPattern = singlePattern.Trim();
+
+                    // Handle wildcard patterns (*.tmp, *.~*)
+                    if (trimmedPattern.StartsWith("*."))
+                    {
+                        var extension = trimmedPattern.Substring(1);
+                        if (fileName.EndsWith(extension))
+                            return true;
+                    }
+                    // Handle exact filename matches
+                    else if (fileName == trimmedPattern || fileName.EndsWith("\\" + trimmedPattern))
+                    {
+                        return true;
+                    }
+                    // Handle wildcard patterns with asterisks in middle
+                    else if (trimmedPattern.Contains("*"))
+                    {
+                        var regexPattern = "^" + System.Text.RegularExpressions.Regex.Escape(trimmedPattern).Replace("\\*", ".*") + "$";
+                        if (System.Text.RegularExpressions.Regex.IsMatch(fileName, regexPattern))
+                            return true;
+                    }
+                }
+
+                return false;
             }
             catch
             {

@@ -10,6 +10,7 @@ namespace WpfApp1.Data
         public DbSet<FileOrganizationLog> FileOrganizationLogs { get; set; }
         public DbSet<FileOrganizationSchedule> FileOrganizationSchedules { get; set; }
         public DbSet<AppSettings> AppSettings { get; set; }
+        public DbSet<ExclusionPattern> ExclusionPatterns { get; set; }
 
         // ML/AI Suggestion Tables
         public DbSet<FileCategorySuggestion> FileCategorySuggestions { get; set; }
@@ -60,6 +61,24 @@ namespace WpfApp1.Data
                 .Property(r => r.FilePattern)
                 .IsRequired()
                 .HasMaxLength(50);
+
+            // Configure ExclusionPattern
+            modelBuilder.Entity<ExclusionPattern>()
+                .HasKey(e => e.Id);
+
+            modelBuilder.Entity<ExclusionPattern>()
+                .Property(e => e.PatternName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<ExclusionPattern>()
+                .Property(e => e.Pattern)
+                .IsRequired()
+                .HasMaxLength(255);
+
+            modelBuilder.Entity<ExclusionPattern>()
+                .Property(e => e.Description)
+                .HasMaxLength(500);
 
             // Configure FileOrganizationLog
             modelBuilder.Entity<FileOrganizationLog>()

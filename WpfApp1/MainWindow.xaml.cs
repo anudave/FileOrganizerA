@@ -29,6 +29,11 @@ namespace WpfApp1
             {
                 _dbContext = DbContextService.GetInstance();
                 _dbContext.Database.EnsureCreated();
+
+                // Initialize default exclusion patterns
+                var exclusionService = new ExclusionPatternService(_dbContext);
+                exclusionService.InitializeDefaultPatterns();
+
                 MessageBox.Show("Database initialized successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)

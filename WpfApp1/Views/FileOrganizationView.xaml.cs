@@ -160,6 +160,7 @@ namespace WpfApp1.Views
 
             // Enable organize button if folder is selected
             OrganizeBtn.IsEnabled = fileCount > 0 && !string.IsNullOrEmpty(_currentFolderPath);
+            PreviewBtn.IsEnabled = fileCount > 0 && !string.IsNullOrEmpty(_currentFolderPath);
             StatusText.Text = $"Ready to organize {fileCount} files";
 
             // Clear previous results
@@ -242,12 +243,13 @@ namespace WpfApp1.Views
                         displayText += $"  {item.FileName}\n";
                         displayText += $"    → {item.DestinationPath}\n";
 
+
                         // Show duplicate handling if applicable
                         if (item.IsDuplicate)
                         {
                             displayText += $"    [DUPLICATE] Action: {item.DuplicateAction}\n";
                         }
-
+ main
                         displayText += $"    ({FolderStructureService.FormatFileSize(item.FileSizeBytes)})\n\n";
                     }
                 }
@@ -383,6 +385,18 @@ namespace WpfApp1.Views
         ~FileOrganizationView()
         {
             _dbContext?.Dispose();
+        }
+
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var scrollViewer = sender as ScrollViewer;
+            if (scrollViewer != null)
+            {
+                // Smooth scrolling: scroll by 3 lines per wheel tick (instead of default jump)
+                double scrollAmount = e.Delta > 0 ? -3 : 3; // Negative for up, positive for down
+                scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset + scrollAmount);
+                e.Handled = true;
+            }
         }
     }
 }
