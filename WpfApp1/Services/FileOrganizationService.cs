@@ -113,17 +113,7 @@ namespace WpfApp1.Services
                     return preview;
                 }
 
-                // Step 4: Get active exclusion patterns
-                var exclusionPatterns = _dbContext.ExclusionPatterns
-                    .Where(e => e.IsActive)
-                    .ToList();
-
-                if (exclusionPatterns.Count > 0)
-                {
-                    preview.Messages.Add($"Loaded {exclusionPatterns.Count} active exclusion patterns");
-                }
-
-                // Step 5: Analyze each file
+                // Step 4: Analyze each file
                 foreach (var file in files)
                 {
                     try
@@ -131,23 +121,6 @@ namespace WpfApp1.Services
                         var fileInfo = new FileInfo(file);
                         var fileName = fileInfo.Name;
                         var extension = fileInfo.Extension.ToLower();
-
-                        // Check if file is excluded
-                        if (IsFileExcluded(fileName, exclusionPatterns))
-                        {
-                            var excludedItem = new PreviewItem
-                            {
-                                FileName = fileName,
-                                SourcePath = file,
-                                FileExtension = extension,
-                                FileSizeBytes = fileInfo.Length,
-                                Status = "Will Skip",
-                                Reason = "File matches exclusion pattern",
-                                DestinationPath = "N/A"
-                            };
-                            preview.SkipItems.Add(excludedItem);
-                            continue;
-                        }
 
                         var matchingRule = FindMatchingRule(extension, rules);
 

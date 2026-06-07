@@ -88,6 +88,34 @@ namespace WpfApp1.Data
                 .Property(l => l.SourceFilePath)
                 .IsRequired();
 
+            // Configure FileOrganizationSchedule
+            modelBuilder.Entity<FileOrganizationSchedule>()
+                .HasKey(s => s.Id);
+
+            modelBuilder.Entity<FileOrganizationSchedule>()
+                .Property(s => s.ScheduleName)
+                .IsRequired();
+
+            modelBuilder.Entity<FileOrganizationSchedule>()
+                .Property(s => s.TargetFolderPath)
+                .IsRequired();
+
+            modelBuilder.Entity<FileOrganizationSchedule>()
+                .Property(s => s.ScheduleType)
+                .IsRequired();
+
+            modelBuilder.Entity<FileOrganizationSchedule>()
+                .Property(s => s.StartTime)
+                .IsRequired();
+
+            modelBuilder.Entity<FileOrganizationSchedule>()
+                .Property(s => s.LastRunStatus)
+                .IsRequired();
+
+            modelBuilder.Entity<FileOrganizationSchedule>()
+                .Property(s => s.LastRunMessage)
+                .IsRequired();
+
             // Configure FileCategorySuggestion (ML/AI)
             modelBuilder.Entity<FileCategorySuggestion>()
                 .HasKey(s => s.Id);
