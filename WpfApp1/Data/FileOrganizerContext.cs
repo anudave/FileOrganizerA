@@ -60,7 +60,7 @@ namespace WpfApp1.Data
             modelBuilder.Entity<FileOrganizationRule>()
                 .Property(r => r.FilePattern)
                 .IsRequired()
-                .HasMaxLength(50);
+                .HasMaxLength(500);
 
             // Configure ExclusionPattern
             modelBuilder.Entity<ExclusionPattern>()

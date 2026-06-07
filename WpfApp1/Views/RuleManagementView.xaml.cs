@@ -39,6 +39,11 @@ namespace WpfApp1.Views
                 var rules = _ruleService.GetAllRules();
                 RulesDataGrid.ItemsSource = rules;
                 StatusText.Text = $"Loaded {rules.Count} rules";
+
+                // Show rules panel and hide suggestions
+                RulesScrollViewer.Visibility = Visibility.Visible;
+                SuggestionsScrollViewer.Visibility = Visibility.Collapsed;
+                AISuggestionsControlPanel.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
             {
@@ -492,9 +497,13 @@ namespace WpfApp1.Views
 
                 SuggestionsScrollViewer.Visibility = Visibility.Visible;
                 RulesScrollViewer.Visibility = Visibility.Collapsed;
+<<<<<<< HEAD
                 SuggestionsDataGrid.Visibility = Visibility.Visible;
                 RulesDataGrid.Visibility = Visibility.Collapsed;
                 _currentNestedPage = "SmartSuggestions"; // Track that we're now on smart suggestions page
+=======
+                AISuggestionsControlPanel.Visibility = Visibility.Collapsed;
+>>>>>>> 7758a69 (fixing ai smart suggestion)
 
                 StatusText.Text = $"✓ Generated {suggestions.Count} smart suggestions from {files.Length} files. Review and accept/reject them.";
                 GetSuggestionsBtn.IsEnabled = true;

@@ -94,55 +94,57 @@
         </Border>
 
         <!-- AI Smart Suggestions Section -->
-        <Border Grid.Row="2" Background="#1E4620" Margin="20,10,20,10" Padding="15" CornerRadius="5" BorderBrush="#4CAF50" BorderThickness="2">
+        <Border Grid.Row="2" Background="#1E4620" Margin="20,10,20,10" Padding="15" CornerRadius="5" BorderBrush="#4CAF50" BorderThickness="2" x:Name="AISuggestionsControlPanel">
             <StackPanel>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="🤖 AI Smart Suggestions" Foreground="#4CAF50" FontSize="14" FontWeight="Bold"/>
                         <TextBlock Text="Let AI analyze your files and suggest intelligent organization rules" Foreground="#90EE90" FontSize="11" Margin="0,5,0,0"/>
+                        <!-- Folder path display -->
+                        <TextBlock x:Name="SelectedFolderDisplay" Text="No folder selected" Foreground="#90EE90" FontSize="10" Margin="0,8,0,0"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button x:Name="SelectFolderForSuggestionsBtn" Content="📁 Select Folder" Background="#4CAF50" Foreground="White" Padding="12,8" Margin="0,0,10,0" Click="SelectFolderForSuggestions_Click" FontWeight="Bold"/>
-                        <Button x:Name="GetSuggestionsBtn" Content="⚡ Get Smart Suggestions" Background="#4CAF50" Foreground="White" Padding="12,8" Click="GetSmartSuggestions_Click" FontWeight="Bold" IsEnabled="False"/>
-                    </StackPanel>
+                    <Button Grid.Column="1" x:Name="SelectFolderForSuggestionsBtn" Content="📁 Select Folder" Background="#4CAF50" Foreground="White" Padding="12,8" Margin="10,0,10,0" Click="SelectFolderForSuggestions_Click" FontWeight="Bold" Height="40"/>
+
+                    <Button Grid.Column="2" x:Name="GetSuggestionsBtn" Content="⚡ Get Smart Suggestions" Background="#4CAF50" Foreground="White" Padding="12,8" Click="GetSmartSuggestions_Click" FontWeight="Bold" IsEnabled="False" Height="40"/>
                 </Grid>
-
-                <!-- Folder path display -->
-                <TextBlock x:Name="SelectedFolderDisplay" Text="No folder selected" Foreground="#90EE90" FontSize="10" Margin="0,10,0,0"/>
             </StackPanel>
         </Border>
 
         <!-- Smart Suggestions Results Grid -->
         <Border Grid.Row="3" Margin="20,10,20,10" Background="#2B2B2B" Visibility="Collapsed" x:Name="SuggestionsScrollViewer" BorderBrush="#4CAF50" BorderThickness="2" CornerRadius="5">
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PanningMode="VerticalFirst">
-                <DataGrid x:Name="SuggestionsDataGrid" Background="#2B2B2B" Foreground="White"
-                          AutoGenerateColumns="False" RowBackground="#3B3B3B" 
-                          AlternatingRowBackground="#454545" BorderBrush="#4CAF50" BorderThickness="0">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="200" Foreground="White"/>
-                        <DataGridTextColumn Header="Suggested Category" Binding="{Binding Suggestions[0].SuggestedCategory}" Width="120" Foreground="White"/>
-                        <DataGridTextColumn Header="Destination" Binding="{Binding Suggestions[0].DestinationFolder}" Width="*" Foreground="White"/>
-                        <DataGridTextColumn Header="Confidence (%)" Binding="{Binding Suggestions[0].ConfidenceScore}" Width="100" Foreground="#4CAF50" FontWeight="Bold"/>
-                        <DataGridTextColumn Header="Reasons" Binding="{Binding TopSuggestionReason}" Width="200" Foreground="White"/>
-                        <DataGridTemplateColumn Header="Action" Width="120">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button Content="✓ Accept" Background="#4CAF50" Foreground="White" Padding="8,4" Margin="0,0,5,0" Click="AcceptSuggestion_Click" Tag="{Binding}"/>
-                                        <Button Content="✗ Reject" Background="#F44336" Foreground="White" Padding="8,4" Click="RejectSuggestion_Click" Tag="{Binding}"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </ScrollViewer>
+            <StackPanel>
+                <TextBlock Text="🤖 AI Smart Suggestions Results" Foreground="#4CAF50" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" Padding="10,0,0,0"/>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PanningMode="VerticalFirst">
+                    <DataGrid x:Name="SuggestionsDataGrid" Background="#2B2B2B" Foreground="White"
+                              AutoGenerateColumns="False" RowBackground="#3B3B3B" 
+                              AlternatingRowBackground="#454545" BorderBrush="#4CAF50" BorderThickness="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="200" Foreground="White"/>
+                            <DataGridTextColumn Header="Suggested Category" Binding="{Binding Suggestions[0].SuggestedCategory}" Width="120" Foreground="White"/>
+                            <DataGridTextColumn Header="Destination" Binding="{Binding Suggestions[0].DestinationFolder}" Width="*" Foreground="White"/>
+                            <DataGridTextColumn Header="Confidence (%)" Binding="{Binding Suggestions[0].ConfidenceScore}" Width="100" Foreground="#4CAF50" FontWeight="Bold"/>
+                            <DataGridTextColumn Header="Reasons" Binding="{Binding TopSuggestionReason}" Width="200" Foreground="White"/>
+                            <DataGridTemplateColumn Header="Action" Width="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="✓ Accept" Background="#4CAF50" Foreground="White" Padding="8,4" Margin="0,0,5,0" Click="AcceptSuggestion_Click" Tag="{Binding}"/>
+                                            <Button Content="✗ Reject" Background="#F44336" Foreground="White" Padding="8,4" Click="RejectSuggestion_Click" Tag="{Binding}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </ScrollViewer>
+            </StackPanel>
         </Border>
 
         <!-- Rules List -->
