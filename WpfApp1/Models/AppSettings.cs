@@ -8,8 +8,11 @@ namespace WpfApp1.Models
         public bool SchedulerAutoStart { get; set; } = true;
         public string? DefaultOrganizationFolder { get; set; }
         public bool EnableNotifications { get; set; } = true;
+
         public string Theme { get; set; } = "Dark"; // Dark or Light
         public string DuplicateHandlingStrategy { get; set; } = "Rename"; // Skip, Overwrite, Rename, KeepNewer
+
+
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public DateTime LastModifiedDate { get; set; } = DateTime.Now;
     }

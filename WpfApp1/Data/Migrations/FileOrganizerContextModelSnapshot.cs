@@ -131,11 +131,17 @@ namespace WpfApp1.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DestinationFolder")
                         .IsRequired()
+                        .HasMaxLength(260)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FilePattern")

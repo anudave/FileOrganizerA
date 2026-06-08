@@ -271,20 +271,32 @@ namespace WpfApp1.Services
         {
             var schedule = new FileOrganizationSchedule
             {
-                ScheduleName = scheduleName,
-                TargetFolderPath = targetFolder,
-                ScheduleType = scheduleType,
-                StartTime = startTime,
-                DaysOfWeek = daysOfWeek,
+                ScheduleName = scheduleName ?? "",
+                TargetFolderPath = targetFolder ?? "",
+                ScheduleType = scheduleType ?? "",
+                StartTime = startTime ?? "",
+                DaysOfWeek = daysOfWeek ?? "",
                 IntervalHours = intervalHours,
                 IsActive = true,
                 LastRunTime = default,
                 LastRunStatus = "Pending",
+
                 LastRunMessage = "Awaiting first run"
+
+                LastRunMessage = ""
+
             };
 
-            _dbContext.FileOrganizationSchedules.Add(schedule);
-            _dbContext.SaveChanges();
+            try
+            {
+                _dbContext.FileOrganizationSchedules.Add(schedule);
+                _dbContext.SaveChanges();
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+            {
+                string innerMsg = ex.InnerException != null ? ex.InnerException.Message : "No inner exception";
+                throw new Exception($"DB Error: {ex.Message} Inner: {innerMsg}", ex);
+            }
 
             return schedule;
         }

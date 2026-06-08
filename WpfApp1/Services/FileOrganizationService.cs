@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using WpfApp1.Data;
 using WpfApp1.Models;
 
@@ -254,9 +255,17 @@ namespace WpfApp1.Services
         }
 
         /// <summary>
+        /// Main function to organize files based on rules (async - non-blocking)
+        /// </summary>
+        public async Task<OrganizationResult> OrganizeFilesAsync(string sourceFolder, bool moveFiles = true, bool includeSubdirectories = false, bool dryRun = false)
+        {
+            return await Task.Run(() => OrganizeFiles(sourceFolder, moveFiles, includeSubdirectories, dryRun));
+        }
+
+        /// <summary>
         /// Main function to organize files based on rules
         /// </summary>
-        public OrganizationResult OrganizeFiles(string sourceFolder, bool moveFiles = true)
+        public OrganizationResult OrganizeFiles(string sourceFolder, bool moveFiles = true, bool includeSubdirectories = false, bool dryRun = false)
         {
             var result = new OrganizationResult();
 
@@ -271,8 +280,8 @@ namespace WpfApp1.Services
 
                 result.Messages.Add($"Starting file organization for: {sourceFolder}");
 
-                // Step 2: Get all files from source folder (recursively)
-                var files = GetAllFilesInFolder(sourceFolder);
+                // Step 2: Get all files from source folder
+                var files = GetAllFilesInFolder(sourceFolder, recursive: includeSubdirectories);
                 result.Messages.Add($"Found {files.Count} files to process");
 
                 if (files.Count == 0)
@@ -362,19 +371,28 @@ namespace WpfApp1.Services
                         {
                             // Matching rule found - organize file
                             result.Messages.Add($"  ✓ Matched rule: {matchingRule.RuleName}");
-                            bool success = OrganizeFile(file, matchingRule.DestinationFolder, moveFiles);
-
-                            if (success)
+                            
+                            if (dryRun)
                             {
                                 result.SuccessCount++;
-                                LogFileOrganization(file, matchingRule.DestinationFolder, "Success", null);
-                                result.Messages.Add($"  ✓ ORGANIZED → {matchingRule.DestinationFolder}");
+                                result.Messages.Add($"  ✓ PREVIEW: Will organize → {matchingRule.DestinationFolder}");
                             }
                             else
                             {
-                                result.FailureCount++;
-                                LogFileOrganization(file, matchingRule.DestinationFolder, "Failed", "Unable to move file");
-                                result.Messages.Add($"  ✗ FAILED: Could not move to {matchingRule.DestinationFolder}");
+                                bool success = OrganizeFile(file, matchingRule.DestinationFolder, moveFiles);
+
+                                if (success)
+                                {
+                                    result.SuccessCount++;
+                                    LogFileOrganization(file, matchingRule.DestinationFolder, "Success", null);
+                                    result.Messages.Add($"  ✓ ORGANIZED → {matchingRule.DestinationFolder}");
+                                }
+                                else
+                                {
+                                    result.FailureCount++;
+                                    LogFileOrganization(file, matchingRule.DestinationFolder, "Failed", "Unable to move file");
+                                    result.Messages.Add($"  ✗ FAILED: Could not move to {matchingRule.DestinationFolder}");
+                                }
                             }
                         }
                     }

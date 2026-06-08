@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using WpfApp1.Data;
@@ -22,6 +23,7 @@ namespace WpfApp1.Views
             InitializeComponent();
             InitializeRuleService();
             LoadRules();
+            PopulateCategoryCombo();
         }
 
         private void InitializeRuleService()
@@ -30,6 +32,32 @@ namespace WpfApp1.Views
             _ruleService = new RuleManagementService(_dbContext);
             _exclusionService = new ExclusionPatternService(_dbContext);
             _mlService = new MLModelService(_dbContext);
+        }
+
+        private void PopulateCategoryCombo()
+        {
+            try
+            {
+                // Clear existing items
+                FilePatternCombo.Items.Clear();
+
+                // Add categories from RuleManagementService
+                var categories = _ruleService.GetAvailableCategories();
+                foreach (var category in categories)
+                {
+                    var item = new ComboBoxItem { Content = category };
+                    FilePatternCombo.Items.Add(item);
+                }
+
+                if (FilePatternCombo.Items.Count > 0)
+                {
+                    FilePatternCombo.SelectedIndex = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error populating categories: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void LoadRules()
@@ -52,6 +80,7 @@ namespace WpfApp1.Views
             }
         }
 
+<<<<<<< HEAD
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             // Check if we're on a nested page (like AI Smart Suggestions)
@@ -84,11 +113,18 @@ namespace WpfApp1.Views
         }
 
         private void AddRule_Click(object sender, RoutedEventArgs e)
+=======
+        private async void AddRule_Click(object sender, RoutedEventArgs e)
+>>>>>>> 45f7516 (feat: update file organization, settings, and database improvements)
         {
             try
             {
                 string ruleName = RuleNameInput.Text.Trim();
+<<<<<<< HEAD
                 string filePattern = ExtractFilePattern(FilePatternCombo.SelectedItem?.ToString() ?? "");
+=======
+                string category = (FilePatternCombo.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "";
+>>>>>>> 45f7516 (feat: update file organization, settings, and database improvements)
                 string destinationFolder = DestinationFolderInput.Text.Trim();
 
                 // Validate inputs
@@ -98,7 +134,7 @@ namespace WpfApp1.Views
                     return;
                 }
 
-                if (string.IsNullOrEmpty(filePattern))
+                if (string.IsNullOrEmpty(category))
                 {
                     MessageBox.Show("Please select a category", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
@@ -110,6 +146,7 @@ namespace WpfApp1.Views
                     return;
                 }
 
+<<<<<<< HEAD
                 // Validate rule using the service
                 var (isValid, errorMessage) = _ruleService.ValidateRule(ruleName, filePattern, destinationFolder);
                 if (!isValid)
@@ -120,6 +157,21 @@ namespace WpfApp1.Views
 
                 // Create rule
                 var newRule = _ruleService.CreateRule(ruleName, filePattern, destinationFolder);
+=======
+                // Validate destination folder exists
+                if (!System.IO.Directory.Exists(destinationFolder))
+                {
+                    MessageBox.Show("Destination folder does not exist or cannot be accessed. Please select a valid folder.", "Invalid Folder", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Disable button to prevent multiple clicks
+                (sender as Button).IsEnabled = false;
+                StatusText.Text = "Creating rule...";
+
+                // Create rule asynchronously
+                var newRule = await _ruleService.CreateRuleAsync(ruleName, category, destinationFolder);
+>>>>>>> 45f7516 (feat: update file organization, settings, and database improvements)
 
                 // Clear inputs
                 RuleNameInput.Clear();
@@ -128,18 +180,24 @@ namespace WpfApp1.Views
 
                 // Reload rules
                 LoadRules();
-                StatusText.Text = $"Rule '{ruleName}' created successfully";
-                MessageBox.Show($"Rule '{ruleName}' created successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                StatusText.Text = $"✓ Rule '{ruleName}' created successfully";
+                MessageBox.Show($"✓ Rule '{ruleName}' created successfully!\n\nCategory: {category}\nDestination: {destinationFolder}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error creating rule: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error creating rule: {ex.Message}\n\n{ex.InnerException?.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 StatusText.Text = "Error creating rule";
+            }
+            finally
+            {
+                (sender as Button).IsEnabled = true;
             }
         }
 
-        private string ExtractFilePattern(string selectedText)
+        private string ExtractCategory(string selectedText)
         {
+<<<<<<< HEAD
             if (string.IsNullOrEmpty(selectedText))
                 return string.Empty;
 
@@ -176,6 +234,9 @@ namespace WpfApp1.Views
             }
 
             return string.Empty;
+=======
+            return selectedText ?? string.Empty;
+>>>>>>> 45f7516 (feat: update file organization, settings, and database improvements)
         }
 
         private void BrowseDestinationFolder_Click(object sender, RoutedEventArgs e)

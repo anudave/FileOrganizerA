@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -166,6 +167,7 @@ namespace WpfApp1.Views
             TotalSizeText.Text = FolderStructureService.FormatFileSize(totalSize);
 
 
+
             // Enable organize button if folder is selected
             OrganizeBtn.IsEnabled = fileCount > 0 && !string.IsNullOrEmpty(_currentFolderPath);
             // Enable buttons if folder is selected
@@ -173,6 +175,13 @@ namespace WpfApp1.Views
             PreviewBtn.IsEnabled = enableButtons;
             OrganizeBtn.IsEnabled = enableButtons;
             StatusText.Text = $"Ready to organize {fileCount} files";
+
+            // Enable organize and preview buttons if folder is selected
+            bool canOrganize = fileCount > 0 && !string.IsNullOrEmpty(_currentFolderPath);
+            OrganizeBtn.IsEnabled = canOrganize;
+            PreviewBtn.IsEnabled = canOrganize;
+            StatusText.Text = "Ready";
+
 
             // Clear previous results
             ResultsText.Text = "Results will appear here...";
@@ -213,6 +222,7 @@ namespace WpfApp1.Views
                 }
             }
         }
+
 
         private void PreviewFiles_Click(object sender, RoutedEventArgs e)
         {
@@ -321,6 +331,18 @@ namespace WpfApp1.Views
         }
 
         private void OrganizeFiles_Click(object sender, RoutedEventArgs e)
+
+        private async void PreviewFiles_Click(object sender, RoutedEventArgs e)
+        {
+            await RunOrganizationProcess(dryRun: true);
+        }
+
+        private async void OrganizeFiles_Click(object sender, RoutedEventArgs e)
+        {
+            await RunOrganizationProcess(dryRun: false);
+        }
+
+        private async Task RunOrganizationProcess(bool dryRun)
         {
             if (string.IsNullOrEmpty(_currentFolderPath))
             {
@@ -339,9 +361,9 @@ namespace WpfApp1.Views
                         "❌ No file organization rules found!\n\n" +
                         "Please create at least one rule in the 'Rule Management' tab.\n\n" +
                         "Example:\n" +
-                        "• Rule Name: PDF Documents\n" +
-                        "• Pattern: *.pdf\n" +
-                        "• Destination: C:\\Documents\\PDFs",
+                        "• Rule Name: My Documents\n" +
+                        "• Category: Documents\n" +
+                        "• Destination: C:\\Documents\\MyFiles",
                         "No Rules Found",
                         MessageBoxButton.OK,
                         MessageBoxImage.Warning);
@@ -360,31 +382,42 @@ namespace WpfApp1.Views
                     return;
                 }
 
-                // Step 2: Show diagnostics result
+                // Step 2: Show diagnostics result and disable button
                 OrganizeBtn.IsEnabled = false;
-                StatusText.Text = "Running diagnostics...";
+                PreviewBtn.IsEnabled = false;
+                StatusText.Text = dryRun ? "Generating preview..." : "Running diagnostics...";
                 ResultsText.Text = diagnostics.DiagnosticMessage + "\n\n";
 
-                // Step 3: Run file organization
-                StatusText.Text = "Organizing files...";
-                ResultsText.Text += "Organizing files...\n";
+                // Step 3: Run file organization asynchronously to prevent UI blocking
+                StatusText.Text = dryRun ? "Previewing file organization..." : "Organizing files...";
+                ResultsText.Text += (dryRun ? "Previewing file organization (dry run)...\n" : "Organizing files (this may take a moment)...\n");
 
-                var result = _organizationService.OrganizeFiles(_currentFolderPath, moveFiles: true);
+                var result = await _organizationService.OrganizeFilesAsync(_currentFolderPath, moveFiles: true, includeSubdirectories: false, dryRun: dryRun);
 
                 // Display results
                 string resultText = string.Join("\n", result.Messages);
                 ResultsText.Text += resultText;
 
                 // Update status
-                StatusText.Text = $"✓ Complete: {result.SuccessCount} organized, {result.SkippedCount} skipped, {result.FailureCount} failed";
+                StatusText.Text = $"✓ {(dryRun ? "Preview Complete" : "Complete")}: {result.SuccessCount} {(dryRun ? "will be organized" : "organized")}, {result.SkippedCount} skipped, {result.FailureCount} failed";
+
+                string messageText = dryRun ? 
+                    $"Preview Complete!\n\n" +
+                    $"✓ Will Organize: {result.SuccessCount} files\n" +
+                    $"⊘ Will Skip: {result.SkippedCount} files (no matching rule)\n" +
+                    $"✗ Will Fail: {result.FailureCount} files\n\n" +
+                    $"Please review the Organization Report section in the UI for details on exactly which files matched which rules, and which ones were skipped."
+                    :
+                    $"Organization Complete!\n\n" +
+                    $"✓ Successfully Organized: {result.SuccessCount} files\n" +
+                    $"⊘ Skipped: {result.SkippedCount} files (no matching rule)\n" +
+                    $"✗ Failed: {result.FailureCount} files\n\n" +
+                    $"Please review the Organization Report section in the UI for details on exactly which files matched which rules, and which ones were skipped.";
 
                 // Show summary dialog
                 MessageBox.Show(
-                    $"Organization Complete!\n\n" +
-                    $"✓ Successfully Organized: {result.SuccessCount} files\n" +
-                    $"⊘ Skipped: {result.SkippedCount} files\n" +
-                    $"✗ Failed: {result.FailureCount} files",
-                    "Organization Summary",
+                    messageText,
+                    dryRun ? "Organization Preview Summary" : "Organization Summary",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
 
@@ -393,12 +426,13 @@ namespace WpfApp1.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error during organization: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error during {(dryRun ? "preview" : "organization")}: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 StatusText.Text = "Error occurred";
             }
             finally
             {
                 OrganizeBtn.IsEnabled = true;
+                PreviewBtn.IsEnabled = true;
             }
         }
 

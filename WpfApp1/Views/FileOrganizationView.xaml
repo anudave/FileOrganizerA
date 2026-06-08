@@ -59,9 +59,15 @@
             <StackPanel>
                 <TextBlock Text="File Organization" Foreground="White" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
                 <StackPanel Orientation="Horizontal">
+
                     <Button x:Name="PreviewBtn" Content="👁 Preview" Background="#FF9800" Foreground="White" Padding="20,10" Click="PreviewFiles_Click" FontWeight="Bold" Width="150" Height="40" IsEnabled="False"/>
                     <Button x:Name="OrganizeBtn" Content="▶ Start Organization" Background="#4CAF50" Foreground="White" Padding="20,10" Click="OrganizeFiles_Click" FontWeight="Bold" Width="200" Height="40" IsEnabled="False" Margin="10,0,0,0"/>
                     <Button Content="🔄 Refresh" Background="#2196F3" Foreground="White" Padding="15,10" Click="RefreshFolderStats_Click" Margin="10,0,0,0" Width="120" Height="40" FontWeight="Bold"/>
+
+                    <Button x:Name="PreviewBtn" Content="👁 Preview" Background="#2196F3" Foreground="White" Padding="15,10" Click="PreviewFiles_Click" FontWeight="Bold" Width="120" Height="40" IsEnabled="False" Margin="0,0,10,0"/>
+                    <Button x:Name="OrganizeBtn" Content="▶ Start Organization" Background="#4CAF50" Foreground="White" Padding="20,10" Click="OrganizeFiles_Click" FontWeight="Bold" Width="200" Height="40" IsEnabled="False"/>
+                    <Button Content="🔄 Refresh" Background="#FF6B35" Foreground="White" Padding="15,10" Click="RefreshFolderStats_Click" Margin="10,0,0,0" Width="120" Height="40" FontWeight="Bold"/>
+
                     <TextBlock x:Name="StatusText" Text="Ready" Foreground="#CCCCCC" VerticalAlignment="Center" Margin="20,0,0,0"/>
                 </StackPanel>
             </StackPanel>
