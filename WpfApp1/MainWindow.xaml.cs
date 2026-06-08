@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Input;
 using WpfApp1.Data;
 using WpfApp1.Services;
@@ -20,6 +20,7 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
+
             InitializeDatabase();
             InitializeViews();
             InitializeNavigationService();
@@ -32,7 +33,23 @@ namespace WpfApp1
         }
 
         private void InitializeDatabase()
+
+            Loaded += MainWindow_Loaded;
+        }
+
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            // Show loading message
+            var loadingText = new System.Windows.Controls.TextBlock 
+            { 
+                Text = "Initializing Database and Loading Application...", 
+                Foreground = System.Windows.Media.Brushes.White,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                FontSize = 18
+            };
+            ContentHost.Children.Add(loadingText);
+
             try
             {
                 _dbContext = DbContextService.GetInstance();
@@ -43,6 +60,15 @@ namespace WpfApp1
                 exclusionService.InitializeDefaultPatterns();
 
                 MessageBox.Show("Database initialized successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Run DB initialization in background to avoid freezing the UI
+                await Task.Run(() => 
+                {
+                    _dbContext = DbContextService.GetInstance();
+                });
+
+                InitializeViews();
+                NavigateToFileOrganization(null, null);
+
             }
             catch (Exception ex)
             {

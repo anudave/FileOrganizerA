@@ -20,6 +20,8 @@ namespace WpfApp1.Services
                     if (_instance == null)
                     {
                         _instance = new FileOrganizerContext();
+                        // Auto-migrate database on first context creation
+                        _instance.EnsureMigrated();
                     }
                 }
             }

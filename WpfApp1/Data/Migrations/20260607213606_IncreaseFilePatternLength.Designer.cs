@@ -11,8 +11,8 @@ using WpfApp1.Data;
 namespace WpfApp1.Data.Migrations
 {
     [DbContext(typeof(FileOrganizerContext))]
-    [Migration("20260601102136_RemoveCloudOrganizationTables")]
-    partial class RemoveCloudOrganizationTables
+    [Migration("20260607213606_IncreaseFilePatternLength")]
+    partial class IncreaseFilePatternLength
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -139,7 +139,7 @@ namespace WpfApp1.Data.Migrations
 
                     b.Property<string>("FilePattern")
                         .IsRequired()
-                        .HasMaxLength(50)
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")

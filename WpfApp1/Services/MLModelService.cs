@@ -53,6 +53,7 @@ namespace WpfApp1.Services
         /// <summary>
         /// Trains the ML model from existing organization rules
         /// Called when new rules are created
+        /// Now handles pipe-separated patterns properly
         /// </summary>
         public void TrainModelFromExistingRules()
         {
@@ -70,20 +71,17 @@ namespace WpfApp1.Services
                 var rules = _dbContext.FileOrganizationRules.ToList();
                 var patterns = new List<SmartSuggestionPattern>();
 
-                var groupedRules = rules.GroupBy(r => r.FilePattern);
-
-                foreach (var group in groupedRules)
+                // Process each rule and preserve pipe-separated format
+                foreach (var rule in rules)
                 {
-                    var destinations = group.Select(r => r.DestinationFolder).Distinct().ToList();
-
                     var pattern = new SmartSuggestionPattern
                     {
-                        FilePattern = group.Key,
-                        Category = DetermineCategory(group.Key),
-                        CommonDestinationFolder = destinations.First(),
-                        Frequency = group.Count(),
+                        FilePattern = rule.FilePattern,  // Keep pipe-separated format: "*.pdf|*.doc|*.docx"
+                        Category = DetermineCategory(rule.FilePattern),
+                        CommonDestinationFolder = rule.DestinationFolder,
+                        Frequency = 1,
                         Accuracy = 0.85,
-                        Confidence = Math.Min(100, 50 + (group.Count() * 15)),
+                        Confidence = 75,
                         LastUpdated = DateTime.Now
                     };
 
@@ -198,24 +196,41 @@ namespace WpfApp1.Services
         }
 
         /// <summary>
-        /// Helper to determine file category
+        /// Helper to determine file category from pipe-separated pattern
+        /// Handles patterns like "*.pdf|*.doc|*.docx"
         /// </summary>
-        private string DetermineCategory(string extension)
+        private string DetermineCategory(string pattern)
         {
+            if (string.IsNullOrEmpty(pattern))
+                return "Other";
+
             var categories = new Dictionary<string, List<string>>
             {
-                { "Documents", new List<string> { ".pdf", ".doc", ".docx", ".txt", ".xlsx", ".xls", ".pptx", ".ppt" } },
-                { "Images", new List<string> { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".ico", ".webp" } },
-                { "Videos", new List<string> { ".mp4", ".avi", ".mkv", ".mov", ".wmv", ".flv", ".webm" } },
-                { "Audio", new List<string> { ".mp3", ".wav", ".flac", ".aac", ".wma", ".ogg" } },
-                { "Archives", new List<string> { ".zip", ".rar", ".7z", ".tar", ".gz", ".iso" } },
-                { "Code", new List<string> { ".cs", ".cpp", ".java", ".py", ".js", ".html", ".css" } },
+                { "Documents", new List<string> { ".pdf", ".doc", ".docx", ".txt", ".xlsx", ".xls", ".pptx", ".ppt", ".odt", ".rtf" } },
+                { "Images", new List<string> { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".ico", ".webp", ".tiff" } },
+                { "Videos", new List<string> { ".mp4", ".avi", ".mkv", ".mov", ".wmv", ".flv", ".webm", ".m4v" } },
+                { "Audio", new List<string> { ".mp3", ".wav", ".flac", ".aac", ".wma", ".ogg", ".m4a" } },
+                { "Archives", new List<string> { ".zip", ".rar", ".7z", ".tar", ".gz", ".iso", ".bz2" } },
+                { "Code", new List<string> { ".cs", ".cpp", ".java", ".py", ".js", ".html", ".css", ".php", ".c", ".h" } },
+                { "Spreadsheets", new List<string> { ".xls", ".xlsx", ".csv", ".ods" } },
+                { "Presentations", new List<string> { ".ppt", ".pptx", ".odp" } },
             };
 
-            foreach (var cat in categories)
+            // Handle pipe-separated patterns: "*.pdf|*.doc|*.docx"
+            var extensions = pattern.Split('|', StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var ext in extensions)
             {
-                if (cat.Value.Contains(extension.ToLower()))
-                    return cat.Key;
+                var cleanExt = ext.Trim().TrimStart('*', '.').ToLower();
+                var fullExt = "." + cleanExt;
+
+                foreach (var cat in categories)
+                {
+                    if (cat.Value.Any(e => e.Equals(fullExt, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        return cat.Key;
+                    }
+                }
             }
 
             return "Other";
